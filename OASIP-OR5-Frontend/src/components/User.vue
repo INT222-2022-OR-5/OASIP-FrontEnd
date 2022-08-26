@@ -36,6 +36,7 @@ const createUser = async (Name, Email, Role) => {
       getUser();
     } else console.log("error, cannot be added");
   }
+  // window.location.reload();
 }
 
 const props = defineProps({
