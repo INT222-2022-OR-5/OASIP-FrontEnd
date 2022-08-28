@@ -69,7 +69,12 @@ const checkOverlap = (start_1, end_1, start_2, end_2) => {
   <div v-show="isModalOn" class="modal-show flex justify-center">
     <div class="modal-content bg-base-100 rounded-2xl">
       <div class="flex justify-end">
-        <button class="close" @click="isModalOn = !isModalOn">x</button>
+        <!-- <button class="close" @click="isModalOn = !isModalOn">x</button> -->
+        <button class="btn btn-circle btn-outline" @click="isModalOn = !isModalOn">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
       </div>
       <div class="flex justify-center">
         <div>
@@ -147,7 +152,7 @@ const checkOverlap = (start_1, end_1, start_2, end_2) => {
 
 <style scoped>
 .font-header {
-  color: #ff9d00;
+  color: #2E86C1;
 }
 
 .modal-content {

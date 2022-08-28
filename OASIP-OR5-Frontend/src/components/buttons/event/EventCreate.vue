@@ -114,7 +114,7 @@ const empty = (name) => {
               <span class="auto-fill">({{ Name.length }}/100)</span></label>
             <div class="py-3">
               <input type="text" v-model="Name" maxlength="100" class="form-element bg-base-100 italic"
-                placeholder="Your name" required />
+                placeholder="Please enter your name" required />
               <!-- <p class="text-red-600" v-show="errorname">Error!!!</p> -->
             </div>
             <!-- Email -->
@@ -122,7 +122,7 @@ const empty = (name) => {
               <span class="auto-fill">({{ Email.length }}/50)</span></label>
             <div class="py-3">
               <input type="email" v-model="Email" maxlength="50" class="form-element bg-base-100 border-b-2 italic"
-                placeholder="Your email" required />
+                placeholder="Please enter your email" required />
             </div>
             <!-- Clinic -->
             <label for="clinics">Clinic</label>

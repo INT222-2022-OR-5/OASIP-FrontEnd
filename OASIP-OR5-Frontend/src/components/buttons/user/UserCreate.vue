@@ -71,27 +71,28 @@ const uniqueemail = (email) => {
               <span class="auto-fill">({{ Name.length }}/100)</span></label>
             <div class="py-3">
               <input type="text" v-model="Name" maxlength="100" class="form-element bg-base-100 italic"
-                placeholder="Your name" required />
+                placeholder="Please enter your name" required />
             </div>
-            <p class="text-red-600" v-show="error">Empty element</p>
-            <p class="text-red-600" v-show="Nerror">unique element</p>
+            <!-- <p class="text-red-600" v-show="error">Empty element</p> -->
+            <p class="text-red-600" v-show="Nerror">This name is already in use.</p>
 
             <!-- Email -->
             <label for="Email">Email
               <span class="auto-fill">({{ Email.length }}/50)</span></label>
             <div class="py-3">
               <input type="email" v-model="Email" maxlength="50" class="form-element bg-base-100 border-b-2 italic"
-                placeholder="Your email" required />
+                placeholder="Please enter your email" required />
             </div>
-            <p class="text-red-600" v-show="Eerror">unique element</p>
+            <p class="text-red-600" v-show="Eerror">This email is already in use.</p>
 
             <!-- Role -->
             <label for="role">Role</label>
             <div class="py-3">
-              <select name="roles" class="select form-element bg-base-100 border-b-2 italic" v-model="option" required>
+              <select name="roles" class="select form-element bg-base-100 border-b-2 italic" v-model="option">
                 <option v-for="role in roles">{{ role }}</option>
               </select>
             </div>
+            <span class="text-xs	text-red-500">** If you don't select role, the default will be student **</span>
           </div>
           <div class="pt-2">
             <!-- Create -->
