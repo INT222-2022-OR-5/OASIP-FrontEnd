@@ -2,10 +2,10 @@
 import { ref, onBeforeMount } from "vue";
 import moment from "moment";
 
-import Detail from "./buttons/schedule/Detail.vue";
-import Create from "./buttons/schedule/Create.vue";
-import Delete from "./buttons/schedule/Delete.vue";
-import Navbar from "./buttons/schedule/Navbar.vue";
+import EventDetail from "./buttons/event/EventDetail.vue";
+import EventCreate from "./buttons/event/EventCreate.vue";
+import EventDelete from "./buttons/event/EventDelete.vue";
+import EventNavbar from "./buttons/event/EventNavbar.vue";
 
 const schedules = ref([]);
 
@@ -155,9 +155,9 @@ const getPast = async () => {
     <table class="table-zebra table-layout table-element">
       <thead class="table-header bg-base-200">
         <tr>
-          <Navbar @option="getClinic" @upcoming="getUpcoming" @past="getPast" />
+          <EventNavbar @option="getClinic" @upcoming="getUpcoming" @past="getPast" />
           <th>
-            <Create :detail="schedules" @create="createNewSchedules" />
+            <EventCreate :detail="schedules" @create="createNewSchedules" />
           </th>
         </tr>
       </thead>
@@ -195,10 +195,10 @@ const getPast = async () => {
 
           <td>
             <div id="showDetail">
-              <Detail @moreDetail="moreDetail(contents)" :detail="currentDetail" :data="data" :event="schedules"
+              <EventDetail @moreDetail="moreDetail(contents)" :detail="currentDetail" :data="data" :event="schedules"
                 @editDetail="modifySchedules" />
 
-              <Delete @delete="removeSchedules(contents.id)" />
+              <EventDelete @delete="removeSchedules(contents.id)" />
             </div>
           </td>
         </tr>

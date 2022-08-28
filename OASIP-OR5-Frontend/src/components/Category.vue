@@ -1,8 +1,8 @@
 <script setup>
 import { ref, onBeforeMount } from "vue";
 
-import CEdit from "./buttons/category/CEdit.vue";
-import CNavbar from "./buttons/category/CNavbar.vue";
+import CategoryEdit from "./buttons/category/CategoryEdit.vue";
+import CategoryNavbar from "./buttons/category/CategoryNavbar.vue";
 
 const categories = ref([]);
 
@@ -58,7 +58,7 @@ const moreDetail = (curbookingId) => {
     <table class="table-zebra table-layout table-element">
       <thead class="table-header bg-base-200">
         <tr>
-          <CNavbar />
+          <CategoryNavbar />
           <th></th>
         </tr>
       </thead>
@@ -84,7 +84,7 @@ const moreDetail = (curbookingId) => {
 
           <td>
             <div id="showDetail">
-              <CEdit @moreDetail="moreDetail(contents)" :detail="currentDetail" :name="currentDetail.eventCategoryName"
+              <CategoryEdit @moreDetail="moreDetail(contents)" :detail="currentDetail" :name="currentDetail.eventCategoryName"
                 :description="currentDetail.eventCategoryDescription" :duration="currentDetail.eventDuration"
                 :category="categories" @editDetail="modifyCategories" />
             </div>

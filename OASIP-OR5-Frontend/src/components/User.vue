@@ -1,8 +1,8 @@
 <script setup>
-import UNavbar from "./buttons/user/UNavbar.vue";
-import UCreate from "./buttons/user/UCreate.vue";
-import UDetail from "./buttons/user/UDetail.vue";
-import UDelete from "./buttons/user/UDelete.vue";
+import UserNavbar from "./buttons/user/UserNavbar.vue";
+import UserCreate from "./buttons/user/UserCreate.vue";
+import UserDetail from "./buttons/user/UserDetail.vue";
+import UserDelete from "./buttons/user/UserDelete.vue";
 
 import { ref, onBeforeMount } from "vue";
 
@@ -90,9 +90,9 @@ const moreDetail = (curUserId) => {
     <table class="table-zebra table-layout table-element">
       <thead class="table-header bg-base-200">
         <tr>
-          <UNavbar />
+          <UserNavbar />
           <th>
-            <UCreate @create="createNewUsers" :users="users" />
+            <UserCreate @create="createNewUsers" :users="users" />
           </th>
         </tr>
       </thead>
@@ -118,9 +118,9 @@ const moreDetail = (curUserId) => {
           </td>
           <td>
             <div>
-              <UDetail @moreDetail="moreDetail(contents)" :detail="currentDetail" :users="users"
+              <UserDetail @moreDetail="moreDetail(contents)" :detail="currentDetail" :users="users"
                 @editDetail="modifyUser" />
-              <UDelete @delete="removeUsers(contents.id)" />
+              <UserDelete @delete="removeUsers(contents.id)" />
             </div>
           </td>
         </tr>
