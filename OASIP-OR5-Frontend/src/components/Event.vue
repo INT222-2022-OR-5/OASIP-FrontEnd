@@ -1,10 +1,11 @@
 <script setup>
 import { ref, onBeforeMount } from "vue";
 import moment from "moment";
-import Detail from "./buttons/scheduleBtn/Detail.vue";
-import Create from "./buttons/scheduleBtn/Create.vue";
-import Delete from "./buttons/scheduleBtn/Delete.vue";
-import Navbar from "./buttons/scheduleBtn/Navbar.vue";
+
+import Detail from "./buttons/schedule/Detail.vue";
+import Create from "./buttons/schedule/Create.vue";
+import Delete from "./buttons/schedule/Delete.vue";
+import Navbar from "./buttons/schedule/Navbar.vue";
 
 const schedules = ref([]);
 
@@ -19,6 +20,7 @@ const getSchedules = async () => {
 onBeforeMount(async () => {
   await getSchedules();
 });
+
 //DELETE
 const removeSchedules = async (removeContentID) => {
   if (confirm("Do you really want to delete")) {

@@ -1,11 +1,11 @@
 <script setup>
-import Schedules from "../components/Schedules.vue";
+import Event from "../components/Event.vue";
 </script>
 
 <template>
   <div id="content-section">
     <p class="pt-8 font-sans font-bold text-4xl text-center">All Schedule</p>
-    <schedules />
+    <Event />
   </div>
 </template>
 

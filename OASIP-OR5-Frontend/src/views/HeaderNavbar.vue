@@ -5,7 +5,7 @@
     <div class="bg-gray-100">
       <nav class="container px-6 py-8 mx-auto md:flex md:justify-between md:items-center">
         <div class="flex items-center justify-between">
-          <router-link :to="{ name: 'Home' }" class="text-4xl font-bold text-gray-800 md:text-4xl hover:text-blue-400">
+          <router-link :to="{ name: 'home' }" class="text-4xl font-bold text-gray-800 md:text-4xl hover:text-blue-400">
             <svg class="h-8 fill-current inline" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512.005 512.005">
               <rect fill="#2a2a31" x="16.539" y="425.626" width="479.767" height="50.502"
                 transform="matrix(1,0,0,1,0,0)" />
@@ -19,16 +19,16 @@
         <ul :class="showMenu ? 'flex' : 'hidden'"
           class="flex-col mt-8 space-y-4 md:flex md:space-y-0 md:flex-row md:items-center md:space-x-10 md:mt-0">
           <li class="text-sm font-bold text-gray-800 hover:text-blue-400">
-            <router-link :to="{ name: 'Home' }">Home</router-link>
+            <router-link :to="{ name: 'home' }">Home</router-link>
           </li>
           <li class="text-sm font-bold text-gray-800 hover:text-blue-400">
-            <router-link :to="{ name: 'categoryContents' }">Category</router-link>
+            <router-link :to="{ name: 'categoryList' }">Category</router-link>
           </li>
           <li class="text-sm font-bold text-gray-800 hover:text-blue-400">
-            <router-link :to="{ name: 'scheduleContents' }">Schedule</router-link>
+            <router-link :to="{ name: 'eventList' }">Schedule</router-link>
           </li>
           <li class="text-sm font-bold text-gray-800 hover:text-blue-400">
-            <router-link :to="{ name: 'userContents' }">User</router-link>
+            <router-link :to="{ name: 'userList' }">User</router-link>
           </li>
           <li class="text-sm font-bold text-gray-800 hover:text-blue-400">
             <router-link :to="{ name: 'aboutUs' }">About Us</router-link>

@@ -1,7 +1,8 @@
 <script setup>
 import { ref, onBeforeMount } from "vue";
-import CEdit from "./buttons/categoryBtn/CEdit.vue";
-import CNavbar from "./buttons/categoryBtn/CNavbar.vue";
+
+import CEdit from "./buttons/category/CEdit.vue";
+import CNavbar from "./buttons/category/CNavbar.vue";
 
 const categories = ref([]);
 

@@ -1,8 +1,8 @@
 import { createRouter, createWebHistory } from "vue-router"
 import Home from "../views/Home.vue"
-import Contents from "../views/Contents.vue"
-import CategoryContent from "../views/CategoryContent.vue"
-import UserContents from "../views/UserContents.vue"
+import EventList from "../views/EventList.vue"
+import CategoryList from "../views/CategoryList.vue"
+import UserList from "../views/UserList.vue"
 import AboutUs from "../views/AboutUs.vue"
 
 
@@ -10,23 +10,23 @@ const history = createWebHistory(import.meta.env.VITE_BASE_URL)
 const routes = [
     {
         path: '/',
-        name: 'Home',
+        name: 'home',
         component: Home,
     },
     {
-        path: "/schedule",
-        name: "scheduleContents",
-        component: Contents,
+        path: "/event",
+        name: "eventList",
+        component: EventList,
     },
     {
         path: "/category",
-        name: "categoryContents",
-        component: CategoryContent,
+        name: "categoryList",
+        component: CategoryList,
     },
     {
         path: "/user",
-        name: "userContents",
-        component: UserContents,
+        name: "userList",
+        component: UserList,
     },
     {
         path: '/aboutus',

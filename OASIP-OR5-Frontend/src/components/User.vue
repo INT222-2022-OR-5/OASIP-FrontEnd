@@ -1,12 +1,13 @@
 <script setup>
-import UNavbar from "./buttons/userBtn/UNavbar.vue";
-import UCreate from "./buttons/userBtn/UCreate.vue";
-import UDetail from "./buttons/userBtn/UDetail.vue";
-import UDelete from "./buttons/userBtn/UDelete.vue";
+import UNavbar from "./buttons/user/UNavbar.vue";
+import UCreate from "./buttons/user/UCreate.vue";
+import UDetail from "./buttons/user/UDetail.vue";
+import UDelete from "./buttons/user/UDelete.vue";
 
 import { ref, onBeforeMount } from "vue";
 
 const users = ref([]);
+
 // GET
 const getUsers = async () => {
   const res = await fetch(import.meta.env.VITE_USER_URL);
@@ -37,6 +38,7 @@ const createNewUsers = async (Name, Email, Role) => {
     } else console.log("error, cannot be added");
   }
 };
+
 // DELETE
 const removeUsers = async (removeContentID) => {
   if (confirm("Do you really want to delete")) {
