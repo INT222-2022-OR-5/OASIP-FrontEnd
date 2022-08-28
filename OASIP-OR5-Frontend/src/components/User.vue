@@ -1,27 +1,27 @@
 <script setup>
-import { ref, onBeforeMount } from 'vue'
-import AddUser from "./AddUser.vue";
+import UNavbar from "./buttons/userBtn/UNavbar.vue";
+import UCreate from "./buttons/userBtn/UCreate.vue";
+import UDetail from "./buttons/userBtn/UDetail.vue";
+import UDelete from "./buttons/userBtn/UDelete.vue";
 
-defineEmits(['deleteUser'])
+import { ref, onBeforeMount } from "vue";
 
-const userData = ref([])
-
-const getUser = async () => {
-  const res = await fetch(`${import.meta.env.BASE_URL}api/users`)
+const users = ref([]);
+// GET
+const getUsers = async () => {
+  const res = await fetch(import.meta.env.VITE_USER_URL);
   if (res.status === 200) {
-    userData.value = await res.json()
-    console.log(`response.status: ${res.status}`)
-    console.log(userData.value)
-  } else console.log("Error,This page can't get data")
-}
-
+    users.value = await res.json();
+  } else console.log("error, cannot get data");
+};
 onBeforeMount(async () => {
-  await getUser()
-})
+  await getUsers();
+});
 
-const createUser = async (Name, Email, Role) => {
+// POST
+const createNewUsers = async (Name, Email, Role) => {
   if (Name.trim() != "") {
-    const res = await fetch(`${import.meta.env.BASE_URL}api/users`, {
+    const res = await fetch(import.meta.env.VITE_USER_URL, {
       method: "POST",
       headers: {
         "content-type": "application/json",
@@ -29,99 +29,166 @@ const createUser = async (Name, Email, Role) => {
       body: JSON.stringify({
         name: Name.trim(),
         email: Email.trim(),
-        role: Role
+        role: Role,
       }),
     });
     if (res.status === 201) {
-      getUser();
+      getUsers();
     } else console.log("error, cannot be added");
   }
-  // window.location.reload();
+};
+// DELETE
+const removeUsers = async (removeContentID) => {
+  if (confirm("Do you really want to delete")) {
+    const res = await fetch(
+      import.meta.env.VITE_USER_URL + "/" + removeContentID,
+      {
+        method: "DELETE",
+      }
+    );
+    if (res.status === 200) {
+      users.value = users.value.filter((users) => users.id !== removeContentID);
+      console.log("deleted successfullly");
+    } else console.log("error, cannot delete");
+  }
+};
+
+// PUT
+const modifyUser = async (newId, newName, newEmail, newRole, isunique) => {
+  if (isunique == false) {
+    const res = await fetch(import.meta.env.VITE_USER_URL + "/" + newId, {
+      method: "PUT",
+      headers: {
+        "content-type": "application/json",
+      },
+      body: JSON.stringify({
+        name: newName,
+        email: newEmail,
+        role: newRole,
+      }),
+    });
+    if (res.status === 200) {
+      getUsers();
+      console.log("edited successfully");
+    } else console.log("error, cannot edit");
+    console.log(newRole, newName, newEmail);
+  }
+};
+
+const currentDetail = ref({});
+
+const moreDetail = (curUserId) => {
+  currentDetail.value = curUserId;
+  getUsers();
+};
+</script>
+
+<template>
+  <div id="contents-list" v-cloak class="px-10 py-5 flex justify-center">
+    <table class="table-zebra table-layout table-element">
+      <thead class="table-header bg-base-200">
+        <tr>
+          <UNavbar />
+          <th>
+            <UCreate @create="createNewUsers" :users="users" />
+          </th>
+        </tr>
+      </thead>
+      <div class="no-event text-5xl pt-20" v-if="users.length < 1" v-cloak>
+        No Users
+      </div>
+      <tbody v-else>
+        <tr v-for="contents in users">
+          <td class="p-10 text-xl">
+            <div class="box-element break-words">
+              {{ contents.name }}
+            </div>
+          </td>
+          <td class="p-10 text-xl">
+            <div class="box-element break-words">
+              {{ contents.email }}
+            </div>
+          </td>
+          <td class="p-10 text-xl">
+            <div class="box-element break-words">
+              {{ contents.role }}
+            </div>
+          </td>
+          <td>
+            <div>
+              <UDetail @moreDetail="moreDetail(contents)" :detail="currentDetail" :users="users"
+                @editDetail="modifyUser" />
+              <UDelete @delete="removeUsers(contents.id)" />
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</template>
+
+<style scoped>
+[v-cloak] {
+  display: none;
 }
 
-const props = defineProps({
-  userList: {
-    type: Array,
-    require: true
-  }
-})
-</script>
- 
-<template>
-  <div>
-    <p class="p-8 font-sans font-bold text-4xl text-center">All Users</p>
-    <div class="container flex justify-center mx-auto">
-      <div class="flex flex-col">
-        <div class="w-full">
-          <div class="border-b border-gray-200 shadow">
-            <table class="table-fixed divide-y divide-gray-300">
-              <thead class="bg-gray-50">
-                <tr>
-                  <th class="px-6 py-2 text-xs text-gray-500">Name</th>
-                  <th class="px-6 py-2 text-xs text-gray-500">Email</th>
-                  <th class="px-6 py-2 text-xs text-gray-500">Role</th>
-                  <th class="px-6 py-2 text-xs text-gray-500">Detail</th>
-                  <th class="px-6 py-2 text-xs text-gray-500">Delete</th>
-                </tr>
-              </thead>
-              <tbody class="bg-white divide-y divide-gray-300">
-                <tr v-for="(user, index) in userList" :key="user.id" class="whitespace-nowrap">
-                  <td class="px-6 py-4 text-sm text-gray-500">
-                    {{ user.name }}
-                  </td>
+.no-event {
+  text-align: center;
+  width: 100%;
+  position: absolute;
+  z-index: -1;
+}
 
-                  <td class="px-6 py-4 text-sm text-gray-500">
-                    {{ user.email }}
-                  </td>
+table {
+  text-align: left;
+  position: relative;
+  border-collapse: collapse;
+  border-radius: 6px;
+}
 
-                  <td class="px-6 py-4 text-sm text-gray-500">
-                    {{ user.role }}
-                  </td>
+input,
+textarea {
+  color: rgb(0 0 0);
+}
 
-                  <td class="px-6 py-4">
-                    <router-link :to="{ name: 'UserDetail', params: { id: user.id } }">
-                      <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-blue-400" fill="none"
-                        viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                          d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                      </svg>
-                    </router-link>
-                  </td>
+.table-header {
+  position: sticky;
+  top: 0;
+  height: 100px;
+}
 
-                  <td class="px-6 py-4">
-                    <button class="delete" @click="$emit('deleteUser', user.id)">
-                      <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-red-400" fill="none"
-                        viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                          d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                      </svg>
-                    </button>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-          <!-- <router-link :to="{ name: 'UserAdd' }">
-            <button
-              class="w-full mt-4 bg-gradient-to-tr from-indigo-600 to-purple-600 text-white py-2 rounded-md text-lg font-semibold">
-              Sign in
-            </button>
-          </router-link> -->
+.table-layout {
+  table-layout: fixed;
+  width: 90%;
+}
 
-          <button
-            class="w-full mt-4 bg-gradient-to-tr from-indigo-600 to-purple-600 text-white py-2 rounded-md text-lg font-semibold">
-            <AddUser @create="createUser"/>
-          </button>
+.box-element {
+  width: 250px;
+}
 
-        </div>
-      </div>
-    </div>
-    <div v-if="userList.length == 0" class="m-80 font-sans font-bold text-xl text-center text-red-500 text-opacity-25">
-      No Informations.
-    </div>
-  </div>
+.table-element {
+  height: 100px;
+}
 
-</template>
- 
-<style>
+.modal-content {
+  background-color: #ffffff;
+  margin: auto;
+  padding: 20px;
+  border: 1px solid #888;
+  width: 80%;
+  height: 300px;
+}
+
+.modal {
+  position: fixed;
+  z-index: 1;
+  padding-top: 300px;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 600px;
+  overflow: auto;
+  background-color: rgb(0, 0, 0);
+  background-color: rgba(0, 0, 0, 0.4);
+}
 </style>

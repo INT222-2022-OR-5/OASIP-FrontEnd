@@ -1,15 +1,12 @@
-import { createRouter, createWebHistory } from 'vue-router'
-import Home from '../views/Home.vue'
-import EventCategory from '../views/Event-Category.vue'
-import EventList from '../views/Event-List.vue'
-import Team from '../views/Team.vue'
-import DetailBase from '../views/Detail-Base.vue'
-import AddEvent from '../views/Add-Event.vue'
-import UserList from '../views/User-List.vue'
-import UserDetail from '../views/User-Detail.vue'
-import UserAdd from '../views/User-Add.vue'
+import { createRouter, createWebHistory } from "vue-router"
+import Home from "../views/Home.vue"
+import Contents from "../views/Contents.vue"
+import CategoryContent from "../views/CategoryContent.vue"
+import UserContents from "../views/UserContents.vue"
+import AboutUs from "../views/AboutUs.vue"
 
-const history = createWebHistory('/or5/')
+
+const history = createWebHistory(import.meta.env.VITE_BASE_URL)
 const routes = [
     {
         path: '/',
@@ -17,46 +14,26 @@ const routes = [
         component: Home,
     },
     {
-        path: '/category',
-        name: 'EventCategory',
-        component: EventCategory
+        path: "/schedule",
+        name: "scheduleContents",
+        component: Contents,
     },
     {
-        path: '/event',
-        name: 'EventList',
-        component: EventList
+        path: "/category",
+        name: "categoryContents",
+        component: CategoryContent,
     },
     {
-        path: '/user-detail/:id',
-        name: 'UserDetail',
-        component: UserDetail
+        path: "/user",
+        name: "userContents",
+        component: UserContents,
     },
     {
-        path: '/detail/:id',
-        name: 'DetailBase',
-        component: DetailBase
-    },
-    {
-        path: '/addevent',
-        name: 'AddEvent',
-        component: AddEvent
-    },
-    {
-        path: '/team',
-        name: 'Team',
-        component: Team
-    },
-    {
-        path: '/user',
-        name: 'UserList',
-        component: UserList
-    },
-    {
-        path: '/add-user',
-        name: 'UserAdd',
-        component: UserAdd
+        path: '/aboutus',
+        name: 'aboutUs',
+        component: AboutUs
     }
 ]
 
-const router = createRouter({ history, routes })
+const router = createRouter({history,routes})
 export default router

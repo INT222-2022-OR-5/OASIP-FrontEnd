@@ -1,11 +1,11 @@
 <script setup>
-import HeaderNavbar from './components/HeaderNavbar.vue'
+import HeaderNavbar from './views/HeaderNavbar.vue'
 </script>
 
 <template>
+  <HeaderNavbar />
   <div>
-    <HeaderNavbar />
-    <router-view />
+    <router-view></router-view>
   </div>
 </template>
 
