@@ -9,7 +9,7 @@
         <h1 class="my-4 text-4xl font-bold leading-tight">
           Welcome to ORSIP-OR5
         </h1>
-        <p class="leading-normal text-2xl mb-8">
+        <p class="leading-normal text-3xl mb-8">
           Online Appointment Scheduling System for Integrated Project Clinics
         </p>
       </div>
