@@ -36,7 +36,7 @@ const overlap = () => {
   var startTime = moment(props.detail.eventStartTime).format();
   var endTime = moment(props.detail.eventStartTime).add(props.detail.eventDuration, "minutes").format();
   props.event.forEach((e) => {
-    if (e.categoryId === props.detail.categoryId && e.id !== props.detail.id) {
+    if (e.id === props.detail.id && e.id !== props.detail.id) {
       var startTime_2 = e.eventStartTime;
       var endTime_2 = moment(e.eventStartTime)
         .add(e.eventDuration, "minute")
@@ -78,35 +78,55 @@ const checkOverlap = (start_1, end_1, start_2, end_2) => {
       </div>
       <div class="flex justify-center">
         <div>
-          <div class="text-3xl font-bold flex justify-center">
+          <div class="text-2xl font-bold flex justify-center">
             <p class="font-header">
-              {{ detail.bookingName }}
+              Name
             </p>
-            <button v-show="!edit" @click="edit = !edit" class="pl-2">
+            <!-- <button v-show="!edit" @click="edit = !edit" class="pl-2">
               <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
                 stroke="currentColor" stroke-width="2">
                 <path stroke-linecap="round" stroke-linejoin="round"
                   d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
               </svg>
-            </button>
+            </button> -->
           </div>
+
           <div class="text-base font-medium grid justify-center py-2">
-            {{ detail.bookingEmail }}
+            {{  detail.bookingName  }}
           </div>
-          <div class="grid justify-center">
-            <p class="text-lg font-bold grid justify-center py-3 opacity-50">
+
+          <div class="text-2xl font-bold flex justify-center">
+            <p class="font-header">
+              Email
+            </p>
+          </div>
+
+          <div class="text-base font-medium grid justify-center py-2">
+            {{  detail.bookingEmail  }}
+          </div>
+
+          <div class="text-2xl font-bold flex justify-center">
+            <p class="font-header">
               Clinic
             </p>
-            <div class="font-header text-2xl font-bold py-2">
-              {{ detail.categoryName }}
-            </div>
           </div>
+
+          <div class="text-base font-medium grid justify-center py-2">
+            {{  detail.id  }}
+          </div>
+
+          <div class="text-2xl font-bold flex justify-center">
+            <p class="font-header">
+              Date
+            </p>
+          </div>
+
           <!-- form -->
           <form method="post"
             @submit.prevent="$emit('editDetail', detail.id, detail.eventStartTime, detail.eventNotes, isOverlap); (isOverlap == true ? edit : (edit = !edit)); isOverlap = false;">
             <div v-show="!edit" class="text-base font-medium grid justify-center py-2">
               {{
-                  moment(detail.eventStartTime).local().format("D MMMM YYYY, h:mm:ss A")
+               moment(detail.eventStartTime).local().format("D MMMM YYYY, h:mm:ss A") 
               }}
             </div>
             <div v-show="edit" class="text-base font-medium grid justify-center py-2">
@@ -118,17 +138,18 @@ const checkOverlap = (start_1, end_1, start_2, end_2) => {
             </div>
             <div class="text-2xl font-bold grid justify-center py-2">
               <div>
-                <span class="font-header">Duration : </span><span>{{ detail.eventDuration }} minutes</span>
+                <span class="font-header">Duration</span>
+                <p class="text-base font-medium grid justify-center py-2">{{  detail.eventDuration  }} minutes</p>
               </div>
             </div>
             <div class="grid justify-center">
-              <p class="text-lg font-bold opacity-50 grid justify-center py-3">
+              <p class="text-2xl font-bold flex justify-center font-header">
                 Note
               </p>
               <div v-show="!edit" v-if="
                 detail.eventNotes != null && detail.eventNotes.trim() != ''
               " class="text-base font-medium py-2">
-                {{ detail.eventNotes }}
+                {{  detail.eventNotes  }}
               </div>
               <div v-show="!edit" v-else-if="typeof detail.eventNotes" class="text-base font-medium auto-fill py-2">
                 No messages
@@ -145,6 +166,11 @@ const checkOverlap = (start_1, end_1, start_2, end_2) => {
             </div>
           </form>
         </div>
+      </div>
+      <div class="flex justify-center py-4">
+        <button v-show="!edit" @click="edit = !edit" class="pl-2">
+          <button class="btn btn-warning">Edit</button>
+        </button>
       </div>
     </div>
   </div>

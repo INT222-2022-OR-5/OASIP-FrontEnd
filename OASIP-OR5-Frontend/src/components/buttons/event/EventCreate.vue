@@ -38,7 +38,7 @@ const overlap = () => {
   var startTime = moment(Time.value).format();
   var endTime = moment(Time.value).add(Duration.value, "minutes").format();
   props.detail.forEach((e) => {
-    if (e.categoryId === selectedId.value) {
+    if (e.id === selectedId.value) {
       var startTime_2 = e.eventStartTime;
       var endTime_2 = moment(e.eventStartTime)
         .add(e.eventDuration, "minute")

@@ -84,7 +84,7 @@ const createNewSchedules = async (
       body: JSON.stringify({
         bookingName: Name,
         bookingEmail: Email,
-        categoryId: selectedId,
+        id: selectedId,
         eventStartTime: moment(Time).utcOffset("+07:00"),
         eventDuration: Duration,
         eventNotes: Notes.trim() == "" ? null : Notes.trim(),

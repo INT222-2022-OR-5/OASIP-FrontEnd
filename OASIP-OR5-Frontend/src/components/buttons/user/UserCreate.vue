@@ -92,7 +92,7 @@ const uniqueemail = (email) => {
                 <option v-for="role in roles">{{ role }}</option>
               </select>
             </div>
-            <span class="text-xs	text-red-500">** If you don't select role, the default will be student **</span>
+            <span class="text-xs	text-red-500">** If you didn't select role. The default will be a student **</span>
           </div>
           <div class="pt-2">
             <!-- Create -->
