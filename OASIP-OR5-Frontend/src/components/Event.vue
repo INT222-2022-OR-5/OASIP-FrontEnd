@@ -1,104 +1,305 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, onBeforeMount } from "vue";
+import moment from "moment";
 
-defineEmits(['deleteEvent'])
+import EventDetail from "./buttons/event/EventDetail.vue";
+import EventCreate from "./buttons/event/EventCreate.vue";
+import EventDelete from "./buttons/event/EventDelete.vue";
+import EventNavbar from "./buttons/event/EventNavbar.vue";
 
-const props = defineProps({
-  eventList: {
-    type: Array,
-    require: true
+const schedules = ref([]);
+
+// GET
+const getSchedules = async () => {
+  const res = await fetch(import.meta.env.VITE_EVENT_URL);
+  if (res.status === 200) {
+    schedules.value = await res.json();
+  } else console.log("error, cannot get data");
+};
+
+onBeforeMount(async () => {
+  await getSchedules();
+});
+
+//DELETE
+const removeSchedules = async (removeContentID) => {
+  if (confirm("Do you really want to delete")) {
+    const res = await fetch(
+      import.meta.env.VITE_EVENT_URL + "/" + removeContentID,
+      {
+        method: "DELETE",
+      }
+    );
+    if (res.status === 200) {
+      schedules.value = schedules.value.filter(
+        (schedules) => schedules.id !== removeContentID
+      );
+      console.log("deleted successfullly");
+    } else console.log("error, cannot delete");
   }
-})
+};
 
-const month = ref(['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'])
+// PUT
+const modifySchedules = async (newId, newTime, newNotes, isOverlap) => {
+  if (isOverlap) {
+  } else {
+    const res = await fetch(import.meta.env.VITE_EVENT_URL + "/" + newId, {
+      method: "PUT",
+      headers: {
+        "content-type": "application/json",
+      },
+      body: JSON.stringify({
+        eventStartTime: moment(newTime).utcOffset("+07:00"),
+        eventNotes: newNotes == null ? null : newNotes.trim(),
+      }),
+    });
+    if (res.status === 200) {
+      const edit = await res.json();
+      data.value = edit.eventNotes;
+      getSchedules();
+      console.log("edited successfully");
+      console.log(newId, newTime, newNotes);
+    } else console.log("error, cannot edit");
+  }
+};
 
-const formatDate = (date) => {
-  const checkdate = new Date(date)
-  return `${checkdate.getDate()} 
-    ${month.value[checkdate.getMonth()]} 
-    ${checkdate.getFullYear()},
-    ${checkdate.getHours()}:${String(checkdate.getMinutes()).padStart(2, '0')}`
-}
+// POST
+const createNewSchedules = async (
+  Name,
+  Email,
+  selectedId,
+  Time,
+  Duration,
+  Notes,
+  isOverlap
+) => {
+  console.log(isOverlap);
+  if (isOverlap || Name.trim() == "") {
+  } else {
+    const res = await fetch(import.meta.env.VITE_EVENT_URL, {
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+      },
+      body: JSON.stringify({
+        bookingName: Name,
+        bookingEmail: Email,
+        id: selectedId,
+        eventStartTime: moment(Time).utcOffset("+07:00"),
+        eventDuration: Duration,
+        eventNotes: Notes.trim() == "" ? null : Notes.trim(),
+      }),
+    });
+    if (res.status === 201) {
+      getSchedules();
+    } else console.log("error, cannot be added");
+  }
+};
+
+const currentDetail = ref({});
+const data = ref("");
+
+const moreDetail = (curbookingId) => {
+  currentDetail.value = curbookingId;
+  data.value = curbookingId.eventNotes;
+  currentDetail.value.eventStartTime = moment(
+    currentDetail.value.eventStartTime
+  ).format("YYYY-MM-DDTHH:mm:ss");
+  getSchedules();
+};
+
+const filter = ref();
+const upcomingEvent = ref();
+const pastEvent = ref();
+const getClinic = async (id) => {
+  if (id !== 0) {
+    upcomingEvent.value = undefined;
+    pastEvent.value = undefined;
+    const res = await fetch(
+      import.meta.env.VITE_CATEGORY_URL + "/" + id + "/events"
+    );
+    if (res.status === 200) {
+      filter.value = await res.json();
+      console.log(filter.value);
+    } else console.log("error, cannot get data");
+  } else {
+    filter.value = undefined;
+    upcomingEvent.value = undefined;
+    pastEvent.value = undefined;
+  }
+};
+
+const getUpcoming = async () => {
+  const res = await fetch(import.meta.env.VITE_EVENT_URL + "/upcoming");
+  if (res.status === 200) {
+    filter.value = await res.json();
+    upcomingEvent.value = filter.value;
+    pastEvent.value = undefined;
+    console.log(filter.value);
+  } else console.log("error, cannot get data");
+};
+
+const getPast = async () => {
+  const res = await fetch(import.meta.env.VITE_EVENT_URL + "/past");
+  if (res.status === 200) {
+    filter.value = await res.json();
+    pastEvent.value = filter.value;
+    upcomingEvent.value = undefined;
+    console.log(filter.value);
+  } else console.log("error, cannot get data");
+};
 </script>
 
 <template>
-  <p class="p-8 font-sans font-bold text-4xl text-center">Scheduled Events</p>
-
-  <div class="container flex justify-center mx-auto">
-    <div class="flex flex-col">
-      <div class="w-full">
-        <div class="border-b border-gray-200 shadow">
-          <table class="hover:table-fixed divide-y divide-gray-300">
-            <thead class="bg-gray-50">
-              <tr>
-                <th class="px-6 py-2 text-xs text-gray-500">Name</th>
-                <th class="px-6 py-2 text-xs text-gray-500">Email</th>
-                <th class="px-6 py-2 text-xs text-gray-500">Category</th>
-                <th class="px-6 py-2 text-xs text-gray-500">Date</th>
-                <th class="px-6 py-2 text-xs text-gray-500">Duration</th>
-                <th class="px-6 py-2 text-xs text-gray-500">Detail</th>
-                <th class="px-6 py-2 text-xs text-gray-500">Delete</th>
-              </tr>
-            </thead>
-            <tbody class="bg-white divide-y divide-gray-300">
-              <tr v-for="(event, index) in eventList" :key="event.id" class="whitespace-nowrap">
-                <td class="px-6 py-4 text-sm text-gray-500">
-                  {{ event.bookingName }}
-                </td>
-
-                <td class="px-6 py-4 text-sm text-gray-500">
-                  {{ event.bookingEmail }}
-                </td>
-
-                <td class="px-6 py-4 text-sm text-gray-500">
-                  {{ event.eventCategory.eventCategoryName }}
-                </td>
-
-                <td class="px-6 py-4 text-sm text-gray-500">
-                  {{ formatDate(event.eventStartTime) }}
-                </td>
-
-                <td class="px-6 py-4 text-sm text-gray-500">
-                  {{ event.eventDuration }} minute
-                </td>
-
-                <td class="px-6 py-4">
-                  <router-link :to="{ name: 'DetailBase', params: { id: event.id } }">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-blue-400" fill="none"
-                      viewBox="0 0 24 24" stroke="currentColor">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                    </svg>
-                  </router-link>
-                </td>
-
-                <td class="px-6 py-4">
-                  <button class="delete" @click="$emit('deleteEvent', event.id)">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-red-400" fill="none" viewBox="0 0 24 24"
-                      stroke="currentColor">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                    </svg>
-                  </button>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-        <router-link :to="{ name: 'AddEvent' }">
-          <button
-            class="w-full mt-4 bg-gradient-to-tr from-indigo-600 to-purple-600 text-white py-2 rounded-md text-lg font-semibold">
-            Add New Schedule
-          </button>
-        </router-link>
+  <div id="contents-list" v-cloak class="px-10 py-5 flex justify-center">
+    <table class="table-zebra table-layout table-element">
+      <thead class="table-header bg-base-200">
+        <tr>
+          <EventNavbar @option="getClinic" @upcoming="getUpcoming" @past="getPast" />
+          <th>
+            <EventCreate :detail="schedules" @create="createNewSchedules" />
+          </th>
+        </tr>
+      </thead>
+      <div v-if="schedules < 1 || filter < 1" class="no-event text-5xl pt-20" v-cloak>
+        <p v-if="upcomingEvent == undefined && pastEvent == undefined">
+          No Scheduled Events
+        </p>
+        <p v-else-if="upcomingEvent != undefined">
+          No On-Going or Upcoming Events
+        </p>
+        <p v-else>No Past Events</p>
       </div>
-    </div>
-  </div>
+      <tbody v-else>
+        <tr v-if="filter == undefined" v-for="contents in schedules" :key="contents.id">
+          <td class="p-10 text-xl">
+            <div class="box-element break-words">
+              {{ contents.bookingName }}
+            </div>
+          </td>
+          <td class="p-10 text-xl">
+            <div class="pt-2">
+              {{ contents.eventCategory.eventCategoryName }}
+            </div>
+          </td>
 
-  <div v-if="eventList.length == 0" class="m-80 font-sans font-bold text-xl text-center text-red-500 text-opacity-25">
-    No Scheduled Events.
+          <td class="p-10 text-xl">
+            {{
+                moment(contents.eventStartTime)
+                  .local()
+                  .format("D MMMM YYYY, h:mm:ss A")
+            }}
+          </td>
+
+          <td class="p-10 text-xl">{{ contents.eventDuration }} minute</td>
+
+          <td>
+            <div id="showDetail">
+              <EventDetail @moreDetail="moreDetail(contents)" :detail="currentDetail" :data="data" :event="schedules"
+                @editDetail="modifySchedules" />
+
+              <EventDelete @delete="removeSchedules(contents.id)" />
+            </div>
+          </td>
+        </tr>
+        <tr v-else v-for="contents in filter">
+          <td class="p-10 text-xl">
+            <div class="box-element break-words">
+              {{ contents.bookingName }}
+            </div>
+          </td>
+          <td class="p-10 text-xl">
+            <div class="pt-2">
+              {{ contents.eventCategory.eventCategoryName }}
+            </div>
+          </td>
+
+          <td class="p-10 text-xl">
+            {{
+                moment(contents.eventStartTime)
+                  .local()
+                  .format("D MMMM YYYY, h:mm:ss A")
+            }}
+          </td>
+
+          <td class="p-10 text-xl">{{ contents.eventDuration }} minute</td>
+
+          <td>
+            <div id="showDetail">
+              <Detail @moreDetail="moreDetail(contents)" :detail="currentDetail" :data="data"
+                @editDetail="modifySchedules" />
+
+              <Delete @delete="removeSchedules(contents.id)" />
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
   </div>
 </template>
 
-<style>
+<style scoped>
+[v-cloak] {
+  display: none;
+}
+
+.no-event {
+  text-align: center;
+  width: 100%;
+  position: absolute;
+  z-index: -1;
+}
+
+table {
+  text-align: left;
+  position: relative;
+  border-collapse: collapse;
+  border-radius: 6px;
+}
+
+input,
+textarea {
+  color: rgb(0 0 0);
+}
+
+.table-header {
+  position: sticky;
+  top: 0;
+  height: 100px;
+}
+
+.table-layout {
+  table-layout: fixed;
+  width: 90%;
+}
+
+.box-element {
+  width: 250px;
+}
+
+.table-element {
+  height: 100px;
+}
+
+.modal-content {
+  background-color: #ffffff;
+  margin: auto;
+  padding: 20px;
+  border: 1px solid #888;
+  width: 80%;
+  height: 300px;
+}
+
+.modal {
+  position: fixed;
+  z-index: 1;
+  padding-top: 300px;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 600px;
+  overflow: auto;
+  background-color: rgb(0, 0, 0);
+  background-color: rgba(0, 0, 0, 0.4);
+}
 </style>
