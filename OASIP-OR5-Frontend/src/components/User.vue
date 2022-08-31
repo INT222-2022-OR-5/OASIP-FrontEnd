@@ -56,7 +56,7 @@ const removeUsers = async (removeContentID) => {
 };
 
 // PUT
-const modifyUser = async (newId, newName, newEmail, newRole, isunique) => {
+const modifyUser = async (newId, newName, newEmail, newPassword , newRole, isunique) => {
   if (isunique == false) {
     const res = await fetch(import.meta.env.VITE_USER_URL + "/" + newId, {
       method: "PUT",
