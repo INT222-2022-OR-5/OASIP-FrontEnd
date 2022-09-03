@@ -151,7 +151,7 @@ const getPast = async () => {
 </script>
 
 <template>
-  <div id="contents-list" v-cloak class="px-10 py-5 flex justify-center">
+  <div id="contents-list" class="px-10 py-5 flex justify-center">
     <table class="table-zebra table-layout table-element">
       <thead class="table-header bg-base-200">
         <tr>
@@ -161,7 +161,7 @@ const getPast = async () => {
           </th>
         </tr>
       </thead>
-      <div v-if="schedules < 1 || filter < 1" class="no-event text-5xl pt-20" v-cloak>
+      <div v-if="schedules < 1 || filter < 1" class="no-event text-5xl pt-20">
         <p v-if="upcomingEvent == undefined && pastEvent == undefined">
           No Scheduled Events
         </p>
@@ -239,10 +239,6 @@ const getPast = async () => {
 </template>
 
 <style scoped>
-[v-cloak] {
-  display: none;
-}
-
 .no-event {
   text-align: center;
   width: 100%;
@@ -279,27 +275,5 @@ textarea {
 
 .table-element {
   height: 100px;
-}
-
-.modal-content {
-  background-color: #ffffff;
-  margin: auto;
-  padding: 20px;
-  border: 1px solid #888;
-  width: 80%;
-  height: 300px;
-}
-
-.modal {
-  position: fixed;
-  z-index: 1;
-  padding-top: 300px;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 600px;
-  overflow: auto;
-  background-color: rgb(0, 0, 0);
-  background-color: rgba(0, 0, 0, 0.4);
 }
 </style>

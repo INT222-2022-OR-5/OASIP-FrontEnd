@@ -13,7 +13,7 @@ const getUsers = async () => {
   const res = await fetch(import.meta.env.VITE_USER_URL);
   if (res.status === 200) {
     users.value = await res.json();
-  } else console.log("error, cannot get data");
+  } else console.log("Error, cannot get data");
 };
 onBeforeMount(async () => {
   await getUsers();
@@ -35,13 +35,14 @@ const createNewUsers = async (Name, Email, Role) => {
     });
     if (res.status === 201) {
       getUsers();
-    } else console.log("error, cannot be added");
+      console.log("Created successfully");
+    } else console.log("Error, User cannot be created");
   }
 };
 
 // DELETE
 const removeUsers = async (removeContentID) => {
-  if (confirm("Do you really want to delete")) {
+  if (confirm("Do you want to delete?")) {
     const res = await fetch(
       import.meta.env.VITE_USER_URL + "/" + removeContentID,
       {
@@ -50,8 +51,8 @@ const removeUsers = async (removeContentID) => {
     );
     if (res.status === 200) {
       users.value = users.value.filter((users) => users.id !== removeContentID);
-      console.log("deleted successfullly");
-    } else console.log("error, cannot delete");
+      console.log("Deleted successfullly");
+    } else console.log("Error, User cannot be deleted");
   }
 };
 
@@ -71,8 +72,8 @@ const modifyUser = async (newId, newName, newEmail, newRole, isunique) => {
     });
     if (res.status === 200) {
       getUsers();
-      console.log("edited successfully");
-    } else console.log("error, cannot edit");
+      console.log("Updated successfully");
+    } else console.log("Error, User cannot be updated");
     console.log(newRole, newName, newEmail);
   }
 };
@@ -86,7 +87,7 @@ const moreDetail = (curUserId) => {
 </script>
 
 <template>
-  <div id="contents-list" v-cloak class="px-10 py-5 flex justify-center">
+  <div id="contents-list" class="px-10 py-5 flex justify-center">
     <table class="table-zebra table-layout table-element">
       <thead class="table-header bg-base-200">
         <tr>
@@ -96,7 +97,7 @@ const moreDetail = (curUserId) => {
           </th>
         </tr>
       </thead>
-      <div class="no-event text-5xl pt-20" v-if="users.length < 1" v-cloak>
+      <div class="no-event text-5xl pt-20" v-if="users.length < 1">
         No Users
       </div>
       <tbody v-else>
@@ -130,17 +131,6 @@ const moreDetail = (curUserId) => {
 </template>
 
 <style scoped>
-[v-cloak] {
-  display: none;
-}
-
-.no-event {
-  text-align: center;
-  width: 100%;
-  position: absolute;
-  z-index: -1;
-}
-
 table {
   text-align: left;
   position: relative;
@@ -148,14 +138,7 @@ table {
   border-radius: 6px;
 }
 
-input,
-textarea {
-  color: rgb(0 0 0);
-}
-
-.table-header {
-  position: sticky;
-  top: 0;
+.table-element {
   height: 100px;
 }
 
@@ -164,33 +147,26 @@ textarea {
   width: 90%;
 }
 
-.box-element {
-  width: 250px;
-}
-
-.table-element {
+.table-header {
+  position: sticky;
+  top: 0;
   height: 100px;
 }
 
-.modal-content {
-  background-color: #ffffff;
-  margin: auto;
-  padding: 20px;
-  border: 1px solid #888;
-  width: 80%;
-  height: 300px;
+
+.no-event {
+  text-align: center;
+  width: 100%;
+  position: absolute;
+  z-index: -1;
 }
 
-.modal {
-  position: fixed;
-  z-index: 1;
-  padding-top: 300px;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 600px;
-  overflow: auto;
-  background-color: rgb(0, 0, 0);
-  background-color: rgba(0, 0, 0, 0.4);
+input,
+textarea {
+  color: rgb(0 0 0);
+}
+
+.box-element {
+  width: 250px;
 }
 </style>
