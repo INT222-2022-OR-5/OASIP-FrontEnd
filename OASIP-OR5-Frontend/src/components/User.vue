@@ -20,8 +20,8 @@ onBeforeMount(async () => {
 });
 
 // POST
-const createNewUsers = async (Name, Email, Role) => {
-  if (Name.trim() != "") {
+const createNewUsers = async (Name, Email, Role, Password, isunique, error) => {
+  if (Name.trim() != "" && isunique == false && error == false) {
     const res = await fetch(import.meta.env.VITE_USER_URL, {
       method: "POST",
       headers: {
@@ -31,6 +31,7 @@ const createNewUsers = async (Name, Email, Role) => {
         name: Name.trim(),
         email: Email.trim(),
         role: Role,
+        password: Password
       }),
     });
     if (res.status === 201) {

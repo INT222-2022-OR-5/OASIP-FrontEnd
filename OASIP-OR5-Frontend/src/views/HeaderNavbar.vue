@@ -33,6 +33,9 @@
           <li class="text-sm font-bold text-gray-800 hover:text-blue-400">
             <router-link :to="{ name: 'aboutUs' }">About Us</router-link>
           </li>
+          <button class="btn gap-2">
+            <router-link :to="{ name: 'loginUser' }">LOGIN</router-link>
+          </button>
         </ul>
       </nav>
     </div>
