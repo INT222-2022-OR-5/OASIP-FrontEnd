@@ -10,7 +10,7 @@ const users = ref([]);
 
 // GET
 const getUsers = async () => {
-  const res = await fetch(import.meta.env.VITE_USER_URL);
+  const res = await fetch(`${import.meta.env.BASE_URL}api/users`);
   if (res.status === 200) {
     users.value = await res.json();
   } else console.log("Error, cannot get data");
@@ -22,7 +22,7 @@ onBeforeMount(async () => {
 // POST
 const createNewUsers = async (Name, Email, Role, Password, isunique, error) => {
   if (Name.trim() != "" && isunique == false && error == false) {
-    const res = await fetch(import.meta.env.VITE_USER_URL, {
+    const res = await fetch(`${import.meta.env.BASE_URL}api/users`, {
       method: "POST",
       headers: {
         "content-type": "application/json",
@@ -42,25 +42,25 @@ const createNewUsers = async (Name, Email, Role, Password, isunique, error) => {
 };
 
 // DELETE
-const removeUsers = async (removeContentID) => {
+const removeUsers = async (id) => {
   if (confirm("Do you want to delete?")) {
     const res = await fetch(
-      import.meta.env.VITE_USER_URL + "/" + removeContentID,
+      `${import.meta.env.BASE_URL}api/users/${id}`,
       {
         method: "DELETE",
       }
     );
     if (res.status === 200) {
-      users.value = users.value.filter((users) => users.id !== removeContentID);
+      users.value = users.value.filter((users) => users.id !== id);
       console.log("Deleted successfullly");
     } else console.log("Error, User cannot be deleted");
   }
 };
 
 // PUT
-const modifyUser = async (newId, newName, newEmail, newRole, isunique) => {
+const modifyUser = async (id, newName, newEmail, newRole, isunique) => {
   if (isunique == false) {
-    const res = await fetch(import.meta.env.VITE_USER_URL + "/" + newId, {
+    const res = await fetch(`${import.meta.env.BASE_URL}api/users/${id}`, {
       method: "PUT",
       headers: {
         "content-type": "application/json",

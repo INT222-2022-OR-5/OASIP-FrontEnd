@@ -11,7 +11,7 @@ const userRouter = () => appRouter.push({ name: "userList" });
 
 //POST
 const LoginUsers = async (email, password) => {
-    const res = await fetch(import.meta.env.VITE_LOGIN_URL, {
+    const res = await fetch(`${import.meta.env.BASE_URL}api/users/match`, {
       method: "POST",
       headers: {
         "content-type": "application/json",

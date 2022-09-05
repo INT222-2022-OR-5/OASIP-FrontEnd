@@ -8,7 +8,7 @@ const categories = ref([]);
 
 // GET
 const getCategories = async () => {
-  const res = await fetch(import.meta.env.VITE_CATEGORY_URL);
+  const res = await fetch(`${import.meta.env.BASE_URL}api/eventCategory`);
   if (res.status === 200) {
     categories.value = await res.json();
   } else console.log("error, cannot get data");
@@ -19,15 +19,9 @@ onBeforeMount(async () => {
 });
 
 // PUT
-const modifyCategories = async (
-  id,
-  newName,
-  newDesc,
-  newDuration,
-  isunique
-) => {
+const modifyCategories = async (id, newName, newDesc, newDuration, isunique) => {
   if (isunique == false) {
-    const res = await fetch(import.meta.env.VITE_CATEGORY_URL + "/" + id, {
+    const res = await fetch(`${import.meta.env.BASE_URL}api/eventCategory/${id}`, {
       method: "PUT",
       headers: {
         "content-type": "application/json",
@@ -84,9 +78,9 @@ const moreDetail = (curbookingId) => {
 
           <td>
             <div id="showDetail">
-              <CategoryEdit @moreDetail="moreDetail(contents)" :detail="currentDetail" :name="currentDetail.eventCategoryName"
-                :description="currentDetail.eventCategoryDescription" :duration="currentDetail.eventDuration"
-                :category="categories" @editDetail="modifyCategories" />
+              <CategoryEdit @moreDetail="moreDetail(contents)" :detail="currentDetail"
+                :name="currentDetail.eventCategoryName" :description="currentDetail.eventCategoryDescription"
+                :duration="currentDetail.eventDuration" :category="categories" @editDetail="modifyCategories" />
             </div>
           </td>
         </tr>
