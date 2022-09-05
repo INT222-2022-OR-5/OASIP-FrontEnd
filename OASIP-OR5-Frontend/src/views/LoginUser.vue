@@ -1,9 +1,13 @@
 <script setup>
 import { ref } from "vue";
+import { useRouter } from "vue-router";
 
 const email = ref();
 const password = ref();
 const error = ref(false);
+
+const appRouter = useRouter();
+const userRouter = () => appRouter.push({ name: "userList" });
 
 //POST
 const LoginUsers = async (email, password) => {
@@ -19,6 +23,7 @@ const LoginUsers = async (email, password) => {
     });
     if (res.status === 200) {
 	  alert("Password Matched")
+    userRouter();
 	  console.log("Login successfully");
       error.value = false;
 
