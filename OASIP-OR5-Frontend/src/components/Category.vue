@@ -54,7 +54,7 @@ const moreDetail = (curbookingId) => {
 </script>
 
 <template>
-  <div id="contents-list" v-cloak class="px-10 py-5 flex justify-center">
+  <div id="contents-list" class="px-10 py-5 flex justify-center">
     <table class="table-zebra table-layout table-element">
       <thead class="table-header bg-base-200">
         <tr>
@@ -96,10 +96,6 @@ const moreDetail = (curbookingId) => {
 </template>
 
 <style scoped>
-[v-cloak] {
-  display: none;
-}
-
 table {
   text-align: left;
   position: relative;

@@ -1,6 +1,8 @@
 <script setup>
 import { ref } from "vue";
+
 defineEmits(["create"]);
+
 const props = defineProps({
   users: {
     type: Array,
@@ -11,6 +13,8 @@ const props = defineProps({
 const isModalOn = ref(false);
 const Name = ref("");
 const Email = ref("");
+const Password = ref("");
+const Conpass = ref("");
 const option = ref();
 const roles = ["student", "lecturer", "admin"];
 const error = ref(false);
@@ -25,6 +29,7 @@ const empty = (name) => {
 
 const isunique = ref(false);
 const Nerror = ref(false);
+const Eerror = ref(false);
 
 const uniquename = (name) => {
   props.users.forEach((e) => {
@@ -34,7 +39,7 @@ const uniquename = (name) => {
     }
   });
 };
-const Eerror = ref(false);
+
 const uniqueemail = (email) => {
   props.users.forEach((e) => {
     if (e.email.toLowerCase() == email.trim().toLowerCase()) {
@@ -44,18 +49,46 @@ const uniqueemail = (email) => {
   });
 };
 
+const errorpass = ref(false);
+
+const confirmPass = (pass, conpass) => {
+  if (pass !== conpass) {
+    errorpass.value = true;
+  }
+};
+
+const resetError = () => {
+  error.value = false;
+  Nerror.value = false;
+  Eerror.value = false;
+  errorpass.value = false;
+};
+
+
+const resetClicks = () => {
+  Name.value = "";
+  Email.value = "";
+  option.value = undefined;
+  Password.value = "";
+  Conpass.value = "";
+  error.value = false;
+  Nerror.value = false;
+  Eerror.value = false;
+  isunique.value = false;
+  errorpass.value = false;
+};
+
 </script>
 
 <template>
   <div id="create">
-    <button class="btn btn-outline text-xl font-extrabold px-10"
-      @click="Name = ''; Email = ''; option = undefined; error = false; isunique = false; isModalOn = !isModalOn;">
+    <button class="btn btn-outline text-xl font-extrabold px-10" @click="isModalOn = !isModalOn; resetClicks();">
       CREATE
     </button>
     <div v-show="isModalOn" class="modal-show flex justify-center">
       <div class="modal-content bg-base-100 rounded-2xl">
         <div class="flex justify-end">
-          <button class="btn btn-square btn-outline" @click="isModalOn = !isModalOn">
+          <button class="btn btn-square btn-outline" @click="isModalOn = !isModalOn; resetClicks();">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
               stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -64,17 +97,16 @@ const uniqueemail = (email) => {
         </div>
         <!-- form -->
         <form method="post"
-          @submit.prevent="$emit('create', Name, Email, option); error == true ? isModalOn : isunique == true ? isModalOn : errorpass == true ? isModalOn : (isModalOn = !isModalOn); isunique = false;">
+          @submit.prevent="$emit('create', Name, Email, option, Password, isunique, errorpass); error == true ? isModalOn : isunique == true ? isModalOn : errorpass == true ? isModalOn : (isModalOn = !isModalOn); isunique = false;">
           <!-- Name -->
           <div class="grid justify-center">
             <label for="name">Name
               <span class="auto-fill">({{ Name.length }}/100)</span></label>
             <div class="py-3">
-              <input type="text" v-model="Name" maxlength="100" class="form-element bg-base-100 italic"
+              <input type="text" v-model="Name" maxlength="100" class="form-element bg-base-100 border-b-2 italic"
                 placeholder="Please enter your name" required />
             </div>
-            <!-- <p class="text-red-600" v-show="error">Empty element</p> -->
-            <p class="text-red-600" v-show="Nerror">This name is already in use.</p>
+            <p class="text-red-600" v-show="Nerror">-------- This name is already in use --------</p>
 
             <!-- Email -->
             <label for="Email">Email
@@ -83,7 +115,22 @@ const uniqueemail = (email) => {
               <input type="email" v-model="Email" maxlength="50" class="form-element bg-base-100 border-b-2 italic"
                 placeholder="Please enter your email" required />
             </div>
-            <p class="text-red-600" v-show="Eerror">This email is already in use.</p>
+            <p class="text-red-600" v-show="Eerror">-------- This email is already in use --------</p>
+
+            <!-- password -->
+            <label for="Email">Password</label>
+            <div class="py-3 flex items-center">
+              <input type="password" v-model="Password" minlength="8" maxlength="14"
+                class="form-element bg-base-100 border-b-2 italic" placeholder="••••••••••••••" required />
+            </div>
+
+            <!-- confirm password -->
+            <label for="password">Confirm Password</label>
+            <div class="py-3 flex items-center">
+              <input type="password" v-model="Conpass" minlength="8" maxlength="14"
+                class="form-element bg-base-100 border-b-2 italic" placeholder="••••••••••••••" required />
+            </div>
+            <p class="text-red-600" v-show="errorpass">------------ Password not match ------------</p>
 
             <!-- Role -->
             <label for="role">Role</label>
@@ -97,7 +144,7 @@ const uniqueemail = (email) => {
           <div class="pt-2">
             <!-- Create -->
             <input class="float-right justify-end btn" type="submit" value="Create"
-              @click="empty(Name); uniquename(Name); uniqueemail(Email);" />
+              @click="resetError(); empty(Name); uniquename(Name); uniqueemail(Email); confirmPass(Password, Conpass);" />
           </div>
         </form>
       </div>

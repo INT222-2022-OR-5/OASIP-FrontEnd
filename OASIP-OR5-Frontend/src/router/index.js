@@ -4,7 +4,7 @@ import EventList from "../views/EventList.vue"
 import CategoryList from "../views/CategoryList.vue"
 import UserList from "../views/UserList.vue"
 import AboutUs from "../views/AboutUs.vue"
-
+import LoginUser from "../views/LoginUser.vue"
 
 const history = createWebHistory(import.meta.env.VITE_BASE_URL)
 const routes = [
@@ -32,6 +32,11 @@ const routes = [
         path: '/aboutus',
         name: 'aboutUs',
         component: AboutUs
+    },
+    {
+        path: '/login',
+        name: 'loginUser',
+        component: LoginUser
     }
 ]
 
