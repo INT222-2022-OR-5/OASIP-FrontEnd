@@ -11,7 +11,7 @@ const schedules = ref([]);
 
 // GET
 const getSchedules = async () => {
-  const res = await fetch(import.meta.env.VITE_EVENT_URL);
+  const res = await fetch(`${import.meta.env.BASE_URL}api/events`);
   if (res.status === 200) {
     schedules.value = await res.json();
   } else console.log("error, cannot get data");
@@ -22,17 +22,16 @@ onBeforeMount(async () => {
 });
 
 //DELETE
-const removeSchedules = async (removeContentID) => {
+const removeSchedules = async (id) => {
   if (confirm("Do you really want to delete")) {
-    const res = await fetch(
-      import.meta.env.VITE_EVENT_URL + "/" + removeContentID,
+    const res = await fetch(`${import.meta.env.BASE_URL}api/events/${id}`,
       {
         method: "DELETE",
       }
     );
     if (res.status === 200) {
       schedules.value = schedules.value.filter(
-        (schedules) => schedules.id !== removeContentID
+        (schedules) => schedules.id !== id
       );
       console.log("deleted successfullly");
     } else console.log("error, cannot delete");
@@ -40,10 +39,10 @@ const removeSchedules = async (removeContentID) => {
 };
 
 // PUT
-const modifySchedules = async (newId, newTime, newNotes, isOverlap) => {
+const modifySchedules = async (id, newTime, newNotes, isOverlap) => {
   if (isOverlap) {
   } else {
-    const res = await fetch(import.meta.env.VITE_EVENT_URL + "/" + newId, {
+    const res = await fetch(`${import.meta.env.BASE_URL}api/events/${id}`, {
       method: "PUT",
       headers: {
         "content-type": "application/json",
@@ -58,7 +57,7 @@ const modifySchedules = async (newId, newTime, newNotes, isOverlap) => {
       data.value = edit.eventNotes;
       getSchedules();
       console.log("edited successfully");
-      console.log(newId, newTime, newNotes);
+      console.log(id, newTime, newNotes);
     } else console.log("error, cannot edit");
   }
 };
@@ -76,7 +75,7 @@ const createNewSchedules = async (
   console.log(isOverlap);
   if (isOverlap || Name.trim() == "") {
   } else {
-    const res = await fetch(import.meta.env.VITE_EVENT_URL, {
+    const res = await fetch(`${import.meta.env.BASE_URL}api/events`, {
       method: "POST",
       headers: {
         "content-type": "application/json",
