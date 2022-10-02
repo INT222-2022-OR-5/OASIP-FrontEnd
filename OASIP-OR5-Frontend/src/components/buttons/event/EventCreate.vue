@@ -1,28 +1,37 @@
 <script setup>
 import { ref, onBeforeMount } from "vue";
 import moment from "moment";
+
 defineEmits(["create"]);
+
 const props = defineProps({
   detail: {
     type: Array,
     require: true,
   },
 });
+
 const isModalOn = ref(false);
 const category = ref([]);
 
 // GET
 const getCategories = async () => {
-  const res = await fetch(import.meta.env.VITE_CATEGORY_URL);
+  const res = await fetch(`${import.meta.env.BASE_URL}api/eventCategory`, {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem("token")}`,
+    },
+  });
   if (res.status === 200) {
     category.value = await res.json();
-  } else console.log("error, cannot get data");
+  } else if (res.status === 401 && token !== null) {
+    RefreshToken();
+  } else console.log("Error, cannot get data");
 };
 
 onBeforeMount(async () => {
   await getCategories();
 });
-
 const Name = ref("");
 const Email = ref("");
 const Selected = ref();

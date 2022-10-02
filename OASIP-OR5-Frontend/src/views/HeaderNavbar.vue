@@ -1,8 +1,22 @@
-<script></script>
+<script>
+import { ref } from 'vue'
+import { useRouter } from "vue-router";
+
+let token = ref(localStorage.getItem("token"));
+
+const appRouter = useRouter();
+const homeRouter = () => appRouter.push({ name: "home" });
+
+const signout = () => {
+  localStorage.removeItem("token");
+  homeRouter();
+  alert("Sign Out Successfully")
+}
+</script>
 
 <template>
   <div>
-    <div class="bg-gray-100">
+    <div class="bg-gray-100 shadow">
       <nav class="container px-6 py-8 mx-auto md:flex md:justify-between md:items-center">
         <div class="flex items-center justify-between">
           <router-link :to="{ name: 'home' }" class="text-4xl font-bold text-gray-800 md:text-4xl hover:text-blue-400">
@@ -18,24 +32,37 @@
 
         <ul :class="showMenu ? 'flex' : 'hidden'"
           class="flex-col mt-8 space-y-4 md:flex md:space-y-0 md:flex-row md:items-center md:space-x-10 md:mt-0">
-          <li class="text-sm font-bold text-gray-800 hover:text-blue-400">
-            <router-link :to="{ name: 'home' }">Home</router-link>
+          <li class="text-xl font-bold text-gray-800 hover:text-blue-400 hover-underline-animation ">
+            <router-link :to="{ name: 'categoryList' }">Clinic</router-link>
           </li>
-          <li class="text-sm font-bold text-gray-800 hover:text-blue-400">
-            <router-link :to="{ name: 'categoryList' }">Category</router-link>
-          </li>
-          <li class="text-sm font-bold text-gray-800 hover:text-blue-400">
+          <li class="text-xl font-bold text-gray-800 hover:text-blue-400 hover-underline-animation ">
             <router-link :to="{ name: 'eventList' }">Schedule</router-link>
           </li>
-          <li class="text-sm font-bold text-gray-800 hover:text-blue-400">
+          <li class="text-xl font-bold text-gray-800 hover:text-blue-400 hover-underline-animation ">
             <router-link :to="{ name: 'userList' }">User</router-link>
           </li>
-          <li class="text-sm font-bold text-gray-800 hover:text-blue-400">
+          <li class="text-xl font-bold text-gray-800 hover:text-blue-400 hover-underline-animation ">
             <router-link :to="{ name: 'aboutUs' }">About Us</router-link>
           </li>
-          <button class="btn gap-2">
-            <router-link :to="{ name: 'loginUser' }">LOGIN</router-link>
-          </button>
+
+          <div>
+            <router-link :to="{ name: 'loginUser' }">
+              <button class="btn gap-2">Sign in</button>
+            </router-link>
+          </div>
+
+          <div>
+            <button class="btn gap-2" @click="signout">
+              Sing out
+            </button>
+          </div>
+
+          <!-- <div>
+            <router-link :to="{ name: 'userList' }">
+              <button class="btn gap-2">Sign up</button>
+            </router-link>
+          </div> -->
+
         </ul>
       </nav>
     </div>
@@ -43,4 +70,31 @@
 </template>
 
 <style>
+.hover-underline-animation {
+  display: inline-block;
+  position: relative;
+  color: #000000;
+}
+
+.hover-underline-animation:hover a {
+  color: #0ea5e9;
+}
+
+.hover-underline-animation:after {
+  content: '';
+  position: absolute;
+  width: 100%;
+  transform: scaleX(0);
+  height: 2px;
+  bottom: 0;
+  left: 0;
+  background-color: #4b5563;
+  transform-origin: bottom right;
+  transition: transform 0.25s ease-out;
+}
+
+.hover-underline-animation:hover:after {
+  transform: scaleX(1);
+  transform-origin: bottom left;
+}
 </style>

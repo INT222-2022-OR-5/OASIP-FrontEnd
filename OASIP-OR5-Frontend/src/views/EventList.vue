@@ -4,7 +4,7 @@ import Event from "../components/Event.vue";
 
 <template>
   <div id="content-section">
-    <p class="pt-8 font-sans font-bold text-4xl text-center">All Schedule</p>
+    <p class="p-8 font-sans font-bold text-6xl text-center">All Schedule</p>
     <Event />
   </div>
 </template>
