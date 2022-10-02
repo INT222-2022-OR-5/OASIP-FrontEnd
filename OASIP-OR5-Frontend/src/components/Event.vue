@@ -1,20 +1,53 @@
 <script setup>
-import { ref, onBeforeMount } from "vue";
-import moment from "moment";
-
 import EventDetail from "./buttons/event/EventDetail.vue";
 import EventCreate from "./buttons/event/EventCreate.vue";
 import EventDelete from "./buttons/event/EventDelete.vue";
 import EventNavbar from "./buttons/event/EventNavbar.vue";
 
+import { ref, onBeforeMount } from "vue";
+import moment from "moment";
+
 const schedules = ref([]);
+const newAccess = ref()
+let token = localStorage.getItem("token")
+const refreshToken = localStorage.getItem("refreshToken");
+
+const RefreshToken = async () => {
+  const res = await fetch(`${import.meta.env.BASE_URL}api/refresh-token`, {
+    method: 'get',
+    headers: {
+      Authorization: `Bearer ${refreshToken}`
+    }
+  }
+  );
+  if (res.status === 200) {
+    newAccess.value = await res.json()
+    refresh()
+    getSchedules()
+  } else if (res.status === 401) {
+    localStorage.clear()
+    window.location.href = "/or5"
+    console.log("Please sign out your account");
+  }
+};
+
+const refresh = () => {
+  token = localStorage.setItem('token', `${newAccess.value.accessToken}`)
+}
 
 // GET
 const getSchedules = async () => {
-  const res = await fetch(`${import.meta.env.BASE_URL}api/events`);
+  const res = await fetch(`${import.meta.env.BASE_URL}api/events`, {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem("token")}`,
+    },
+  });
   if (res.status === 200) {
     schedules.value = await res.json();
-  } else console.log("error, cannot get data");
+  } else if (res.status === 401 && token !== null) {
+    RefreshToken();
+  } else console.log("Error, cannot get data");
 };
 
 onBeforeMount(async () => {
@@ -24,61 +57,56 @@ onBeforeMount(async () => {
 //DELETE
 const removeSchedules = async (id) => {
   if (confirm("Do you really want to delete")) {
-    const res = await fetch(`${import.meta.env.BASE_URL}api/events/${id}`,
-      {
-        method: "DELETE",
+    const res = await fetch(`${import.meta.env.BASE_URL}api/events/${id}`, {
+      method: "DELETE",
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
       }
-    );
+    });
     if (res.status === 200) {
       schedules.value = schedules.value.filter(
         (schedules) => schedules.id !== id
       );
-      console.log("deleted successfullly");
-    } else console.log("error, cannot delete");
+      console.log("Deleted successfullly");
+    } else if (res.status === 401 && token !== null) {
+      RefreshToken();
+    } else console.log("Error, cannot delete");
   }
 };
 
 // PUT
-const modifySchedules = async (id, newTime, newNotes, isOverlap) => {
-  if (isOverlap) {
-  } else {
-    const res = await fetch(`${import.meta.env.BASE_URL}api/events/${id}`, {
-      method: "PUT",
-      headers: {
-        "content-type": "application/json",
-      },
-      body: JSON.stringify({
-        eventStartTime: moment(newTime).utcOffset("+07:00"),
-        eventNotes: newNotes == null ? null : newNotes.trim(),
-      }),
-    });
-    if (res.status === 200) {
-      const edit = await res.json();
-      data.value = edit.eventNotes;
-      getSchedules();
-      console.log("edited successfully");
-      console.log(id, newTime, newNotes);
-    } else console.log("error, cannot edit");
-  }
+const modifySchedules = async (id, newTime, newNotes) => {
+  const res = await fetch(`${import.meta.env.BASE_URL}api/events/${id}`, {
+    method: "PUT",
+    headers: {
+      "content-type": "application/json",
+      Authorization: `Bearer ${localStorage.getItem("token")}`
+    },
+    body: JSON.stringify({
+      eventStartTime: moment(newTime).utcOffset("+07:00"),
+      eventNotes: newNotes == null ? null : newNotes.trim(),
+    }),
+  });
+  if (res.status === 200) {
+    const edit = await res.json();
+    data.value = edit.eventNotes;
+    getSchedules();
+    console.log("Edited successfully");
+    console.log(id, newTime, newNotes);
+  } else if (res.status === 401 && token !== null) {
+    RefreshToken();
+  } else console.log("Error, cannot edit");
 };
 
 // POST
-const createNewSchedules = async (
-  Name,
-  Email,
-  selectedId,
-  Time,
-  Duration,
-  Notes,
-  isOverlap
-) => {
-  console.log(isOverlap);
-  if (isOverlap || Name.trim() == "") {
+const createNewSchedules = async (Name, Email, selectedId, Time, Duration, Notes) => {
+  if (Name.trim() == "") {
   } else {
     const res = await fetch(`${import.meta.env.BASE_URL}api/events`, {
       method: "POST",
       headers: {
         "content-type": "application/json",
+        Authorization: `Bearer ${localStorage.getItem("token")}`
       },
       body: JSON.stringify({
         bookingName: Name,
@@ -91,7 +119,9 @@ const createNewSchedules = async (
     });
     if (res.status === 201) {
       getSchedules();
-    } else console.log("error, cannot be added");
+    } else if (res.status === 401 && token !== null) {
+      RefreshToken();
+    } else console.log("Error, cannot be added");
   }
 };
 
@@ -106,71 +136,48 @@ const moreDetail = (curbookingId) => {
   ).format("YYYY-MM-DDTHH:mm:ss");
   getSchedules();
 };
-
-const filter = ref();
-const upcomingEvent = ref();
-const pastEvent = ref();
-const getClinic = async (id) => {
-  if (id !== 0) {
-    upcomingEvent.value = undefined;
-    pastEvent.value = undefined;
-    const res = await fetch(
-      import.meta.env.VITE_CATEGORY_URL + "/" + id + "/events"
-    );
-    if (res.status === 200) {
-      filter.value = await res.json();
-      console.log(filter.value);
-    } else console.log("error, cannot get data");
-  } else {
-    filter.value = undefined;
-    upcomingEvent.value = undefined;
-    pastEvent.value = undefined;
-  }
-};
-
-const getUpcoming = async () => {
-  const res = await fetch(import.meta.env.VITE_EVENT_URL + "/upcoming");
-  if (res.status === 200) {
-    filter.value = await res.json();
-    upcomingEvent.value = filter.value;
-    pastEvent.value = undefined;
-    console.log(filter.value);
-  } else console.log("error, cannot get data");
-};
-
-const getPast = async () => {
-  const res = await fetch(import.meta.env.VITE_EVENT_URL + "/past");
-  if (res.status === 200) {
-    filter.value = await res.json();
-    pastEvent.value = filter.value;
-    upcomingEvent.value = undefined;
-    console.log(filter.value);
-  } else console.log("error, cannot get data");
-};
 </script>
 
 <template>
-  <div id="contents-list" class="px-10 py-5 flex justify-center">
+
+  <div v-if="token == null">
+    <div class="w-full md:w-1/3 mx-auto">
+      <div class="flex flex-col p-5 rounded-lg shadow bg-white">
+        <div class="flex flex-col items-center text-center">
+          <div class="inline-block p-4 bg-yellow-50 rounded-full">
+            <svg class="w-20 h-20 fill-current text-yellow-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+              <path d="M0 0h24v24H0V0z" fill="none" />
+              <path d="M12 5.99L19.53 19H4.47L12 5.99M12 2L1 21h22L12 2zm1 14h-2v2h2v-2zm0-6h-2v4h2v-4z" />
+            </svg>
+          </div>
+          <h2 class="m-2 font-semibold text-gray-800 text-4xl">Please sign in</h2>
+        </div>
+        <router-link :to="{ name: 'loginUser' }">
+          <div class="flex items-center mt-3">
+            <button class="flex-1 px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-800 text-sm font-medium rounded-md">
+              Okay
+            </button>
+          </div>
+        </router-link>
+      </div>
+    </div>
+  </div>
+
+  <div v-else id="contents-list" class="px-10 py-5 flex justify-center">
     <table class="table-zebra table-layout table-element">
       <thead class="table-header bg-base-200">
         <tr>
-          <EventNavbar @option="getClinic" @upcoming="getUpcoming" @past="getPast" />
+          <EventNavbar />
           <th>
             <EventCreate :detail="schedules" @create="createNewSchedules" />
           </th>
         </tr>
       </thead>
-      <div v-if="schedules < 1 || filter < 1" class="no-event text-5xl pt-20">
-        <p v-if="upcomingEvent == undefined && pastEvent == undefined">
-          No Scheduled Events
-        </p>
-        <p v-else-if="upcomingEvent != undefined">
-          No On-Going or Upcoming Events
-        </p>
-        <p v-else>No Past Events</p>
+      <div v-if="schedules < 1" class="no-event text-5xl pt-20">
+        <p>No Scheduled Events</p>
       </div>
       <tbody v-else>
-        <tr v-if="filter == undefined" v-for="contents in schedules" :key="contents.id">
+        <tr v-for="contents in schedules" :key="contents.id">
           <td class="p-10 text-xl">
             <div class="box-element break-words">
               {{ contents.bookingName }}
@@ -181,54 +188,16 @@ const getPast = async () => {
               {{ contents.eventCategory.eventCategoryName }}
             </div>
           </td>
-
           <td class="p-10 text-xl">
-            {{
-                moment(contents.eventStartTime)
-                  .local()
-                  .format("D MMMM YYYY, h:mm:ss A")
-            }}
+            {{moment(contents.eventStartTime).local().format("D MMMM YYYY, h:mm:ss A")}}
           </td>
-
           <td class="p-10 text-xl">{{ contents.eventDuration }} minute</td>
-
           <td>
             <div id="showDetail">
               <EventDetail @moreDetail="moreDetail(contents)" :detail="currentDetail" :data="data" :event="schedules"
                 @editDetail="modifySchedules" />
 
               <EventDelete @delete="removeSchedules(contents.id)" />
-            </div>
-          </td>
-        </tr>
-        <tr v-else v-for="contents in filter">
-          <td class="p-10 text-xl">
-            <div class="box-element break-words">
-              {{ contents.bookingName }}
-            </div>
-          </td>
-          <td class="p-10 text-xl">
-            <div class="pt-2">
-              {{ contents.eventCategory.eventCategoryName }}
-            </div>
-          </td>
-
-          <td class="p-10 text-xl">
-            {{
-                moment(contents.eventStartTime)
-                  .local()
-                  .format("D MMMM YYYY, h:mm:ss A")
-            }}
-          </td>
-
-          <td class="p-10 text-xl">{{ contents.eventDuration }} minute</td>
-
-          <td>
-            <div id="showDetail">
-              <Detail @moreDetail="moreDetail(contents)" :detail="currentDetail" :data="data"
-                @editDetail="modifySchedules" />
-
-              <Delete @delete="removeSchedules(contents.id)" />
             </div>
           </td>
         </tr>

@@ -148,7 +148,7 @@ const checkOverlap = (start_1, end_1, start_2, end_2) => {
               </p>
               <div v-show="!edit" v-if="
                 detail.eventNotes != null && detail.eventNotes.trim() != ''
-              " class="text-base font-medium py-2">
+              " class="text-base font-medium py-2 text-center">
                 {{  detail.eventNotes  }}
               </div>
               <div v-show="!edit" v-else-if="typeof detail.eventNotes" class="text-base font-medium auto-fill py-2">
