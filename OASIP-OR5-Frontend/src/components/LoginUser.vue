@@ -1,15 +1,15 @@
 <script setup>
 import { ref } from "vue";
-import { useRouter } from "vue-router";
+// import { useRouter } from "vue-router";
 
 const token = ref()
 const email = ref();
 const password = ref();
 const error = ref(false);
 
-const appRouter = useRouter();
+// const appRouter = useRouter();
 // const userRouter = () => appRouter.push({ name: "userList" });
-const homeRouter = () => appRouter.push({ name: "home" });
+// const homeRouter = () => appRouter.push({ name: "home" });
 
 const saveLocal = () => {
   localStorage.setItem('token', `${token.value.accessToken}`)
@@ -32,7 +32,8 @@ const LoginUsers = async (email, password) => {
     error.value = false;
     token.value = await res.json();
     saveLocal();
-    homeRouter();
+    // homeRouter();
+    window.location.href = "/"
     alert("Password Matched")
     console.log("Login successfully");
     
