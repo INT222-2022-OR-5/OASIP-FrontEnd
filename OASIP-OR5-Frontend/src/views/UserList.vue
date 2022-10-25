@@ -4,7 +4,7 @@ import User from "../components/User.vue";
 
 <template>
   <div id="content-section">
-    <p class="p-8 font-sans font-bold text-6xl text-center">All User</p>
+    <p class="p-8 font-sans font-bold text-6xl text-center">All Users</p>
     <User />
   </div>
 </template>

@@ -1,19 +1,14 @@
 <script setup>
 import { ref } from "vue";
-import { useRouter } from "vue-router";
 
 const token = ref()
 const email = ref();
 const password = ref();
 const error = ref(false);
 
-const appRouter = useRouter();
-// const userRouter = () => appRouter.push({ name: "userList" });
-const homeRouter = () => appRouter.push({ name: "home" });
-
 const saveLocal = () => {
-  localStorage.setItem('token', `${token.value.accessToken}`)
-  localStorage.setItem('refreshToken', `${token.value.refreshToken}`)
+  localStorage.setItem('token', `${token.value.access_token}`)
+  localStorage.setItem('refreshToken', `${token.value.refresh_token}`)
 }
 
 //POST
@@ -32,7 +27,7 @@ const LoginUsers = async (email, password) => {
     error.value = false;
     token.value = await res.json();
     saveLocal();
-    homeRouter();
+    window.location.href = "/"
     alert("Password Matched")
     console.log("Login successfully");
     
@@ -68,14 +63,15 @@ const LoginUsers = async (email, password) => {
               class="bg-gray-50 border border-gray-300 text-gray-900 italic sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
           </div>
           <button type="submit"
-            class="inline-block px-7 py-3 bg-stone-500 text-white font-medium text-sm leading-snug uppercase rounded shadow-md hover:bg-stone-400 hover:shadow-lg focus:bg-stone-400 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-blue-800 active:shadow-lg transition duration-150 ease-in-out w-full">Sign
-            in</button>
-          <div class="text-sm font-light text-gray-500 dark:text-gray-400">
+            class="inline-block px-7 py-3 bg-stone-500 text-white font-medium text-sm leading-snug uppercase rounded shadow-md hover:bg-stone-400 hover:shadow-lg focus:bg-stone-400 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-blue-800 active:shadow-lg transition duration-150 ease-in-out w-full">
+            Sign in
+          </button>
+          <!-- <div class="text-sm font-light text-gray-500 dark:text-gray-400">
             Don’t have an account yet? <a href="#"
               class="font-medium text-primary-600 hover:underline dark:text-primary-500">
               <router-link :to="{ name: 'userList' }">SIGN UP</router-link>
             </a>
-          </div>
+          </div> -->
         </form>
       </div>
     </div>

@@ -1,16 +1,10 @@
-<script>
-import { ref } from 'vue'
-import { useRouter } from "vue-router";
-
-let token = ref(localStorage.getItem("token"));
-
-const appRouter = useRouter();
-const homeRouter = () => appRouter.push({ name: "home" });
+<script setup>
+let token = localStorage.getItem("token");
 
 const signout = () => {
-  localStorage.removeItem("token");
-  homeRouter();
-  alert("Sign Out Successfully")
+  localStorage.clear()
+  window.location.href = "/"
+  alert("Sign-out Successfully")
 }
 </script>
 
@@ -45,21 +39,21 @@ const signout = () => {
             <router-link :to="{ name: 'aboutUs' }">About Us</router-link>
           </li>
 
-          <div>
+          <div v-if="token === null">
             <router-link :to="{ name: 'loginUser' }">
-              <button class="btn gap-2">Sign in</button>
+              <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full">Sign in</button>
             </router-link>
           </div>
 
-          <div>
-            <button class="btn gap-2" @click="signout">
-              Sing out
+          <div v-else-if="token !== null">
+            <button class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-full" @click="signout">
+              Sign out
             </button>
           </div>
 
-          <!-- <div>
+          <!-- <div v-if="token === null">
             <router-link :to="{ name: 'userList' }">
-              <button class="btn gap-2">Sign up</button>
+              <button class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-full">Sign up</button>
             </router-link>
           </div> -->
 

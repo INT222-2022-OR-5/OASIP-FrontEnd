@@ -54,7 +54,7 @@ onBeforeMount(async () => {
   await getUsers();
 });
 
-// POST with token
+// POST
 const createNewUsers = async (Name, Email, Role, Password, isunique, error) => {
   if (Name.trim() != "" && isunique == false && error == false) {
     const res = await fetch(`${import.meta.env.BASE_URL}api/users/signup`, {
@@ -78,28 +78,6 @@ const createNewUsers = async (Name, Email, Role, Password, isunique, error) => {
     } else console.log("Error, User cannot be created");
   }
 };
-
-// POST without token
-// const createNewUsersNoToken = async (Name, Email, Role, Password, isunique, error) => {
-//   if (Name.trim() != "" && isunique == false && error == false) {
-//     const res = await fetch(`${import.meta.env.BASE_URL}api/users/signup`, {
-//       method: "POST",
-//       headers: {
-//         "content-type": "application/json"
-//       },
-//       body: JSON.stringify({
-//         name: Name.trim(),
-//         email: Email.trim(),
-//         role: Role,
-//         password: Password
-//       }),
-//     });
-//     if (res.status === 201) {
-//       getUsers();
-//       console.log("Created successfully");
-//     } else console.log("Error, User cannot be created");
-//   }
-// };
 
 // DELETE
 const removeUsers = async (id) => {

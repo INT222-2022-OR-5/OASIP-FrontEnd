@@ -8,7 +8,7 @@ import LoginUser from "../components/LoginUser.vue"
 import NotFound from "../views/NotFound.vue";
 import SignUp from "../components/SignupUser.vue";
 
-const history = createWebHistory(import.meta.env.VITE_BASE_URL)
+const history = createWebHistory('/or5/')
 const routes = [
     {
         path: '/',
