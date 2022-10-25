@@ -1,10 +1,5 @@
 <script setup>
-// import { useRouter } from "vue-router";
-
 let token = localStorage.getItem("token");
-
-// const appRouter = useRouter();
-// const homeRouter = () => appRouter.push({ name: "home" });
 
 const signout = () => {
   localStorage.clear()
