@@ -6,6 +6,8 @@ const signout = () => {
   window.location.href = "/"
   alert("Sign-out Successfully")
 }
+
+const role = localStorage.getItem("role");
 </script>
 
 <template>
@@ -32,7 +34,7 @@ const signout = () => {
           <li class="text-xl font-bold text-gray-800 hover:text-blue-400 hover-underline-animation ">
             <router-link :to="{ name: 'eventList' }">Schedule</router-link>
           </li>
-          <li class="text-xl font-bold text-gray-800 hover:text-blue-400 hover-underline-animation ">
+          <li class="text-xl font-bold text-gray-800 hover:text-blue-400 hover-underline-animation " v-if="role === 'admin'">
             <router-link :to="{ name: 'userList' }">User</router-link>
           </li>
           <li class="text-xl font-bold text-gray-800 hover:text-blue-400 hover-underline-animation ">
