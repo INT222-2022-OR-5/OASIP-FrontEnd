@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onBeforeMount } from "vue";
+import { ref } from "vue";
 
 const newUser = ref({
     name: "",
@@ -106,7 +106,7 @@ const createUser = async (user) => {
     });
     if (res.status == 201 || res.status == 200) {
         console.log("added successfully");
-        window.location.href = "/login";
+        window.location.href = "/or5/login";
         alert("Sign-up Successfully")
     } else if (res.status == 400) {
         errorStatus.value = await res.json()
@@ -120,7 +120,7 @@ const createUser = async (user) => {
         <div class="flex justify-center">
             <div class="modal-content-box bg-base-200 rounded-2xl">
 
-                <p class="p-4 font-sans font-bold text-4xl text-center">Create account</p>
+                <p class="p-4 font-sans font-bold text-4xl text-center">Create Account</p>
 
                 <form>
                     <div class="grid justify-center">
@@ -251,17 +251,9 @@ const createUser = async (user) => {
                     </div>
 
                 </form>
-
-
-
-
             </div>
         </div>
-
-
-
     </div>
-
 </template>
       
 <style>

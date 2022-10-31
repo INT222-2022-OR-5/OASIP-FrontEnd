@@ -64,9 +64,7 @@ const removeSchedules = async (id) => {
       }
     });
     if (res.status === 200) {
-      schedules.value = schedules.value.filter(
-        (schedules) => schedules.id !== id
-      );
+      schedules.value = schedules.value.filter((schedules) => schedules.id !== id);
       console.log("Deleted successfullly");
     } else if (res.status === 401 && token !== null) {
       RefreshToken();

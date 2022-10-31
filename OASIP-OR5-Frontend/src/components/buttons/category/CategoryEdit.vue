@@ -31,7 +31,7 @@ const error = ref(false);
 
 const unique = (name, id) => {
   props.category.forEach((e) => {
-    if (id != e.id) {
+    if (e.id != id) {
       if (e.eventCategoryName == name) {
         isunique.value = true;
         error.value = true;
@@ -44,7 +44,7 @@ const unique = (name, id) => {
 <template>
   <button class="m-2 w-10 p-3 edit">
     <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor"
-      stroke-width="2" @click="$emit('moreDetail'); isModalOn = !isModalOn; error = false; name = detail.eventCategoryName; description = detail.eventCategoryDescriptionduration = detail.eventDuration;
+      stroke-width="2" @click="$emit('moreDetail'); isModalOn = !isModalOn; error = false; name = detail.eventCategoryName; description = detail.eventCategoryDescription; duration = detail.eventDuration;
       ">
       <path stroke-linecap="round" stroke-linejoin="round"
         d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />

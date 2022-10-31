@@ -5,8 +5,9 @@ import CategoryList from "../views/CategoryList.vue"
 import UserList from "../views/UserList.vue"
 import AboutUs from "../views/AboutUs.vue"
 import LoginUser from "../components/LoginUser.vue"
-import NotFound from "../views/NotFound.vue";
-import SignUp from "../components/SignupUser.vue";
+import NotFound from "../views/NotFound.vue"
+import SignUp from "../components/SignupUser.vue"
+import CreateUser from "../components/buttons/user/UserCreate.vue"
 
 const history = createWebHistory('/or5/')
 const routes = [
@@ -31,7 +32,7 @@ const routes = [
         component: UserList,
     },
     {
-        path: '/aboutus',
+        path: '/about-us',
         name: 'aboutUs',
         component: AboutUs
     },
@@ -46,10 +47,15 @@ const routes = [
         component: NotFound,
     },
     {
-        path: '/signup',
+        path: '/sign-up',
         name: 'signupUser',
         component: SignUp,
-    }
+    },
+    {
+        path: '/create-user',
+        name: 'createUser',
+        component: CreateUser,
+    },
 ]
 
 const router = createRouter({history,routes})

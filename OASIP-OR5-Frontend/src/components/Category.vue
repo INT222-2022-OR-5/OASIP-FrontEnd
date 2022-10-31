@@ -7,6 +7,7 @@ import { ref, onBeforeMount } from "vue";
 const categories = ref([]);
 const newAccess = ref()
 let token = localStorage.getItem("token")
+let role = localStorage.getItem("role")
 const refreshToken = localStorage.getItem("refreshToken");
 
 const RefreshToken = async () => {
@@ -36,9 +37,9 @@ const refresh = () => {
 const getCategories = async () => {
   const res = await fetch(`${import.meta.env.BASE_URL}api/eventCategory`, {
     method: "GET",
-    headers: {
-      Authorization: `Bearer ${localStorage.getItem("token")}`,
-    },
+    // headers: {
+    //   Authorization: `Bearer ${localStorage.getItem("token")}`,
+    // },
   });
   if (res.status === 200) {
     categories.value = await res.json();
@@ -84,8 +85,7 @@ const moreDetail = (curbookingId) => {
 </script>
 
 <template>
-
-<div v-if="token == null">
+  <!-- <div v-if="token == null">
     <div class="w-full md:w-1/3 mx-auto">
       <div class="flex flex-col p-5 rounded-lg shadow bg-white">
         <div class="flex flex-col items-center text-center">
@@ -106,14 +106,14 @@ const moreDetail = (curbookingId) => {
         </router-link>
       </div>
     </div>
-  </div>
+  </div> -->
 
-  <div v-else id="contents-list" class="px-10 py-5 flex justify-center">
+  <div id="contents-list" class="px-10 py-5 flex justify-center">
     <table class="table-zebra table-layout table-element">
       <thead class="table-header bg-base-200">
         <tr>
           <CategoryNavbar />
-          <th></th>
+          <th v-if="role === 'lecturer' || role === 'admin'"></th>
         </tr>
       </thead>
       <tbody>
@@ -136,7 +136,7 @@ const moreDetail = (curbookingId) => {
           </td>
           <td class="p-10 text-xl">{{ contents.eventDuration }} minute</td>
 
-          <td>
+          <td v-if="role === 'lecturer' || role === 'admin'">
             <div id="showDetail">
               <CategoryEdit @moreDetail="moreDetail(contents)" :detail="currentDetail"
                 :name="currentDetail.eventCategoryName" :description="currentDetail.eventCategoryDescription"

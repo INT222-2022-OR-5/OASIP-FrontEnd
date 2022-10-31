@@ -23,7 +23,7 @@ const Nerror = ref(false);
 
 const uniquename = (name, id) => {
   props.users.forEach((e) => {
-    if (e.id != id) {
+    if (e.userId != id) {
       if (e.name.toLowerCase() == name.trim().toLowerCase()) {
         isunique.value = true;
         Nerror.value = true;
@@ -34,11 +34,10 @@ const uniquename = (name, id) => {
 const Eerror = ref(false);
 const uniqueemail = (email, id) => {
   props.users.forEach((e) => {
-    if (e.id != id) {
+    if (e.userId != id) {
       if (e.email.toLowerCase() == email.trim().toLowerCase()) {
         isunique.value = true;
         Eerror.value = true;
-
       }
     }
   });
@@ -96,7 +95,7 @@ const uniqueemail = (email, id) => {
           </div>
           <!-- form -->
           <form method="post"
-            @submit.prevent="$emit('editDetail', detail.id, detail.name, detail.email, detail.role, isunique); isunique == true ? edit : (edit = !edit); isunique = false;">
+            @submit.prevent="$emit('editDetail', detail.userId, detail.name, detail.email, detail.role, isunique); isunique == true ? edit : (edit = !edit); isunique = false;">
             <div v-show="edit" class="font-bold text-lg font-header">
               Name :
               <input type="text" v-model="detail.name" maxlength="100" class="text-black p-2 rounded-lg text-lg w-72" />
@@ -134,7 +133,7 @@ const uniqueemail = (email, id) => {
             </div>
             <div class="flex justify-center">
               <input class="btn btn-active m-2" v-show="edit" type="submit" value="OK"
-                @click="uniquename(detail.name, detail.id); uniqueemail(detail.email, detail.id);" />
+                @click="uniquename(detail.name, detail.userId); uniqueemail(detail.email, detail.userId);" />
               <input class="btn btn-active m-2" v-show="edit" type="button" value="Cancel" @click="edit = !edit" />
             </div>
           </form>

@@ -1,6 +1,6 @@
 <script setup>
 import UserNavbar from "./buttons/user/UserNavbar.vue";
-import UserCreate from "./buttons/user/UserCreate.vue";
+// import UserCreate from "./buttons/user/UserCreate.vue";
 import UserDetail from "./buttons/user/UserDetail.vue";
 import UserDelete from "./buttons/user/UserDelete.vue";
 
@@ -55,42 +55,41 @@ onBeforeMount(async () => {
 });
 
 // POST
-const createNewUsers = async (Name, Email, Role, Password, isunique, error) => {
-  if (Name.trim() != "" && isunique == false && error == false) {
-    const res = await fetch(`${import.meta.env.BASE_URL}api/users/signup`, {
-      method: "POST",
-      headers: {
-        "content-type": "application/json",
-        Authorization: `Bearer ${localStorage.getItem("token")}`
-      },
-      body: JSON.stringify({
-        name: Name.trim(),
-        email: Email.trim(),
-        role: Role,
-        password: Password
-      }),
-    });
-    if (res.status === 201) {
-      getUsers();
-      console.log("Created successfully");
-    } else if (res.status === 401 && token !== null) {
-      RefreshToken();
-    } else console.log("Error, User cannot be created");
-  }
-};
+// const createNewUsers = async (Name, Email, Role, Password, isunique, error) => {
+//   if (Name.trim() != "" && isunique == false && error == false) {
+//     const res = await fetch(`${import.meta.env.BASE_URL}api/users/signup`, {
+//       method: "POST",
+//       headers: {
+//         "content-type": "application/json",
+//         Authorization: `Bearer ${localStorage.getItem("token")}`
+//       },
+//       body: JSON.stringify({
+//         name: Name.trim(),
+//         email: Email.trim(),
+//         role: Role,
+//         password: Password
+//       }),
+//     });
+//     if (res.status === 201) {
+//       getUsers();
+//       console.log("Created successfully");
+//     } else if (res.status === 401 && token !== null) {
+//       RefreshToken();
+//     } else console.log("Error, User cannot be created");
+//   }
+// };
 
 // DELETE
 const removeUsers = async (id) => {
   if (confirm("Do you want to delete?")) {
-    const res = await fetch(
-      `${import.meta.env.BASE_URL}api/users/${id}`, {
+    const res = await fetch(`${import.meta.env.BASE_URL}api/users/${id}`, {
       method: "DELETE",
       headers: {
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
+        Authorization: `Bearer ${localStorage.getItem("token")}`
       }
     });
     if (res.status === 200) {
-      users.value = users.value.filter((users) => users.id !== id);
+      users.value = users.value.filter((users) => users.userId !== id);
       console.log("Deleted successfullly");
     } else if (res.status === 401 && token !== null) {
       RefreshToken();
@@ -129,6 +128,8 @@ const moreDetail = (curUserId) => {
   currentDetail.value = curUserId;
   getUsers();
 };
+
+
 </script>
 
 <template>
@@ -162,7 +163,10 @@ const moreDetail = (curUserId) => {
         <tr>
           <UserNavbar />
           <th>
-            <UserCreate @create="createNewUsers" :users="users" />
+            <!-- <UserCreate @create="createNewUsers" :users="users" /> -->
+            <router-link :to="{ name: 'createUser' }">
+              <button class="btn btn-outline text-xl font-extrabold px-10">CREATE</button>
+            </router-link>
           </th>
         </tr>
       </thead>
@@ -190,7 +194,7 @@ const moreDetail = (curUserId) => {
             <div>
               <UserDetail @moreDetail="moreDetail(contents)" :detail="currentDetail" :users="users"
                 @editDetail="modifyUser" />
-              <UserDelete @delete="removeUsers(contents.id)" />
+              <UserDelete @delete="removeUsers(contents.userId)" />
             </div>
           </td>
         </tr>

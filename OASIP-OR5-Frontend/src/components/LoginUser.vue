@@ -29,7 +29,7 @@ const LoginUsers = async (email, password) => {
     error.value = false;
     token.value = await res.json();
     saveLocal();
-    window.location.href = "/"
+    window.location.href = "/or5"
     alert("Password Matched")
     console.log("Log-in Successfully");
     
