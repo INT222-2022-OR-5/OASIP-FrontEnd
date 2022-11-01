@@ -181,9 +181,8 @@ const cancelEdit = () => {
   </div>
 
   <div v-if="events.length < 1" class="no-event text-5xl pt-20">
-    <p>No Scheduled Events</p>
+    <p v-if="token !== null">No Scheduled Events</p>
   </div>
-
 
 </template>
  
