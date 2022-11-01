@@ -68,7 +68,7 @@ const LoginUsers = async (email, password) => {
             class="inline-block px-7 py-3 bg-stone-500 text-white font-medium text-sm leading-snug uppercase rounded shadow-md hover:bg-stone-400 hover:shadow-lg focus:bg-stone-400 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-blue-800 active:shadow-lg transition duration-150 ease-in-out w-full">
             Sign in
           </button>
-          <div class="text-sm font-light text-gray-500 dark:text-gray-400">
+          <div class="text-sm font-light text-gray-500 dark:text-gray-400 font-sans">
             Don’t have an account yet? <a href="#"
               class="font-medium text-primary-600 hover:underline dark:text-primary-500">
               <router-link :to="{ name: 'signupUser' }">SIGN UP</router-link>

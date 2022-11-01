@@ -243,7 +243,7 @@ const createUser = async (user) => {
                         </button>
                     </div>
 
-                    <div class="text-sm font-light text-gray-500 dark:text-gray-400">
+                    <div class="font-sans text-sm font-light text-gray-500 dark:text-gray-400">
                         Already have an Account? <a href="#"
                             class="font-medium text-primary-600 hover:underline dark:text-primary-500">
                             <router-link :to="{ name: 'loginUser' }">SIGN IN</router-link>

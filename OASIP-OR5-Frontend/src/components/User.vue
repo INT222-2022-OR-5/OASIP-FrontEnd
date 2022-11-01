@@ -54,31 +54,6 @@ onBeforeMount(async () => {
   await getUsers();
 });
 
-// POST
-// const createNewUsers = async (Name, Email, Role, Password, isunique, error) => {
-//   if (Name.trim() != "" && isunique == false && error == false) {
-//     const res = await fetch(`${import.meta.env.BASE_URL}api/users/signup`, {
-//       method: "POST",
-//       headers: {
-//         "content-type": "application/json",
-//         Authorization: `Bearer ${localStorage.getItem("token")}`
-//       },
-//       body: JSON.stringify({
-//         name: Name.trim(),
-//         email: Email.trim(),
-//         role: Role,
-//         password: Password
-//       }),
-//     });
-//     if (res.status === 201) {
-//       getUsers();
-//       console.log("Created successfully");
-//     } else if (res.status === 401 && token !== null) {
-//       RefreshToken();
-//     } else console.log("Error, User cannot be created");
-//   }
-// };
-
 // DELETE
 const removeUsers = async (id) => {
   if (confirm("Do you want to delete?")) {
@@ -114,7 +89,9 @@ const modifyUser = async (id, newName, newEmail, newRole, isunique) => {
     });
     if (res.status === 200) {
       getUsers();
-      console.log("Updated successfully");
+      console.log("Updated successfully")
+      window.location.reload();
+      alert("Updated Successfully")
     } else if (res.status === 401 && token !== null) {
       RefreshToken();
     } else console.log("Error, User cannot be updated");

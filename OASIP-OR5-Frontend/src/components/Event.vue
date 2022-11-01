@@ -1,13 +1,12 @@
 <script setup>
+import { ref, onBeforeMount } from 'vue'
+import EventList from "./buttons/event/EventList.vue";
 import EventDetail from "./buttons/event/EventDetail.vue";
 import EventCreate from "./buttons/event/EventCreate.vue";
 import EventDelete from "./buttons/event/EventDelete.vue";
 import EventNavbar from "./buttons/event/EventNavbar.vue";
+import moment from 'moment'
 
-import { ref, onBeforeMount } from "vue";
-import moment from "moment";
-
-const schedules = ref([]);
 const newAccess = ref()
 let token = localStorage.getItem("token")
 const refreshToken = localStorage.getItem("refreshToken");
@@ -23,7 +22,9 @@ const RefreshToken = async () => {
   if (res.status === 200) {
     newAccess.value = await res.json()
     refresh()
-    getSchedules()
+    getAllEvent();
+
+
   } else if (res.status === 401) {
     localStorage.clear()
     window.location.href = "/or5"
@@ -32,11 +33,71 @@ const RefreshToken = async () => {
 };
 
 const refresh = () => {
-  token = localStorage.setItem('token', `${newAccess.value.accessToken}`)
+  token = localStorage.setItem('token', `${newAccess.value.access_token}`)
+}
+
+const events = ref([])
+
+//DELETE
+const removeEvent = async (removeEventId) => {
+  if (confirm("Do you really want to delete")) {
+    const res = await fetch(`${import.meta.env.BASE_URL}api/events/${removeEventId}`, {
+      method: 'DELETE',
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+    })
+    if (res.status === 200) {
+      detail.value = false
+      events.value = events.value.filter((event) => event.id !== removeEventId)
+      console.log('Deleted Successfully')
+    }
+    else console.log('Error, Can not delete')
+  }
+
+}
+
+// PUT
+const overlap = ref(false)
+const edited = ref(false)
+const errorPast = ref(false)
+const editEvent = async (editEvent) => {
+  if (moment(editEvent.eventStartTime).isAfter(moment(new Date()))) {
+    errorPast.value = false
+  } else {
+    errorPast.value = true
+  }
+  if (errorPast.value == true) {
+    return
+  }
+  const res = await fetch(`${import.meta.env.BASE_URL}api/events/${editEvent.id}`, {
+    method: 'PUT',
+    headers: {
+      'content-type': 'application/json',
+      Authorization: `Bearer ${localStorage.getItem("token")}`,
+    },
+    body: JSON.stringify({
+      bookingEmail: editEvent.bookingEmail,
+      eventStartTime: editEvent.eventStartTime,
+      eventNotes: editEvent.eventNotes.trim(),
+      eventDuration: editEvent.eventDuration,
+      eventCategory: editEvent.eventCategory
+    })
+  })
+  if (res.status === 200) {
+    edited.value = true
+    overlap.value = false
+    window.location.reload();
+    alert("Edit Successfully")
+    console.log('Edited Successfully');
+  } else {
+    edited.value = false
+    overlap.value = true
+  }
 }
 
 // GET
-const getSchedules = async () => {
+const getAllEvent = async () => {
   const res = await fetch(`${import.meta.env.BASE_URL}api/events`, {
     method: "GET",
     headers: {
@@ -44,100 +105,38 @@ const getSchedules = async () => {
     },
   });
   if (res.status === 200) {
-    schedules.value = await res.json();
+    events.value = await res.json();
+    events.value.sort(function (a, b) { return new Date(b.eventStartTime) - new Date(a.eventStartTime); });
   } else if (res.status === 401 && token !== null) {
     RefreshToken();
-  } else console.log("Error, cannot get data");
-};
+  }
+}
 
 onBeforeMount(async () => {
-  await getSchedules();
-});
+  await getAllEvent();
+})
 
-//DELETE
-const removeSchedules = async (id) => {
-  if (confirm("Do you really want to delete")) {
-    const res = await fetch(`${import.meta.env.BASE_URL}api/events/${id}`, {
-      method: "DELETE",
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
-      }
-    });
-    if (res.status === 200) {
-      schedules.value = schedules.value.filter((schedules) => schedules.id !== id);
-      console.log("Deleted successfullly");
-    } else if (res.status === 401 && token !== null) {
-      RefreshToken();
-    } else console.log("Error, cannot delete");
-  }
-};
-
-// PUT
-const modifySchedules = async (id, newTime, newNotes) => {
-  const res = await fetch(`${import.meta.env.BASE_URL}api/events/${id}`, {
-    method: "PUT",
-    headers: {
-      "content-type": "application/json",
-      Authorization: `Bearer ${localStorage.getItem("token")}`
-    },
-    body: JSON.stringify({
-      eventStartTime: moment(newTime).utcOffset("+07:00"),
-      eventNotes: newNotes == null ? null : newNotes.trim(),
-    }),
-  });
-  if (res.status === 200) {
-    const edit = await res.json();
-    data.value = edit.eventNotes;
-    getSchedules();
-    console.log("Edited successfully");
-    console.log(id, newTime, newNotes);
-  } else if (res.status === 401 && token !== null) {
-    RefreshToken();
-  } else console.log("Error, cannot edit");
-};
-
-// POST
-const createNewSchedules = async (Name, Email, selectedId, Time, Duration, Notes) => {
-  if (Name.trim() == "") {
+const detail = ref(false)
+const showDetail = () => {
+  if (detail.value === false) {
+    detail.value = true
   } else {
-    const res = await fetch(`${import.meta.env.BASE_URL}api/events`, {
-      method: "POST",
-      headers: {
-        "content-type": "application/json",
-        Authorization: `Bearer ${localStorage.getItem("token")}`
-      },
-      body: JSON.stringify({
-        bookingName: Name,
-        bookingEmail: Email,
-        id: selectedId,
-        eventStartTime: moment(Time).utcOffset("+07:00"),
-        eventDuration: Duration,
-        eventNotes: Notes.trim() == "" ? null : Notes.trim(),
-      }),
-    });
-    if (res.status === 201) {
-      getSchedules();
-    } else if (res.status === 401 && token !== null) {
-      RefreshToken();
-    } else console.log("Error, cannot be added");
+    detail.value = false
   }
-};
+}
 
-const currentDetail = ref({});
-const data = ref("");
+const closeEdited = () => {
+  edited.value = false
+}
 
-const moreDetail = (curbookingId) => {
-  currentDetail.value = curbookingId;
-  data.value = curbookingId.eventNotes;
-  currentDetail.value.eventStartTime = moment(
-    currentDetail.value.eventStartTime
-  ).format("YYYY-MM-DDTHH:mm:ss");
-  getSchedules();
-};
+const cancelEdit = () => {
+  if (overlap.value == true || errorPast.value == true) {
+    location.reload()
+  }
+}
 </script>
-
+ 
 <template>
-
   <div v-if="token == null">
     <div class="w-full md:w-1/3 mx-auto">
       <div class="flex flex-col p-5 rounded-lg shadow bg-white">
@@ -161,50 +160,80 @@ const moreDetail = (curbookingId) => {
     </div>
   </div>
 
-  <div v-else id="contents-list" class="px-10 py-5 flex justify-center">
+  <div v-else id="contents-list" class="px-10 pt-5 flex justify-center">
     <table class="table-zebra table-layout table-element">
       <thead class="table-header bg-base-200">
         <tr>
           <EventNavbar />
           <th>
-            <EventCreate :detail="schedules" @create="createNewSchedules" />
+            <button class="btn btn-outline text-xl font-extrabold px-10">
+              CREATE
+            </button>
           </th>
         </tr>
       </thead>
-      <div v-if="schedules < 1" class="no-event text-5xl pt-20">
-        <p>No Scheduled Events</p>
-      </div>
-      <tbody v-else>
-        <tr v-for="contents in schedules" :key="contents.id">
-          <td class="p-10 text-xl">
-            <div class="box-element break-words">
-              {{ contents.bookingName }}
-            </div>
-          </td>
-          <td class="p-10 text-xl">
-            <div class="pt-2">
-              {{ contents.eventCategory.eventCategoryName }}
-            </div>
-          </td>
-          <td class="p-10 text-xl">
-            {{moment(contents.eventStartTime).local().format("D MMMM YYYY, h:mm:ss A")}}
-          </td>
-          <td class="p-10 text-xl">{{ contents.eventDuration }} minute</td>
-          <td>
-            <div id="showDetail">
-              <EventDetail @moreDetail="moreDetail(contents)" :detail="currentDetail" :data="data" :event="schedules"
-                @editDetail="modifySchedules" />
-
-              <EventDelete @delete="removeSchedules(contents.id)" />
-            </div>
-          </td>
-        </tr>
-      </tbody>
     </table>
   </div>
-</template>
 
-<style scoped>
+  <div v-if="events.length !== 0">
+    <EventList :eventList="events" :overlap="overlap" :edited="edited" :errorPast="errorPast" @delete="removeEvent"
+      @edit="editEvent" @cancelEdit="cancelEdit" :detail="detail" @showDetail="showDetail" @closeEdited="closeEdited" />
+  </div>
+
+  <div v-if="events.length < 1" class="no-event text-5xl pt-20">
+    <p>No Scheduled Events</p>
+  </div>
+
+
+</template>
+ 
+<style>
+.body {
+  font-family: 'Radio Canada', 'Noto Sans Thai';
+}
+
+
+
+.filter-head {
+  font-weight: bold;
+  margin-top: 0.5vw;
+}
+
+.Noschedule {
+  font-size: 1.1vw;
+  color: #646464;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  -webkit-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);
+}
+
+
+.form-inline {
+  display: flex;
+  flex-flow: row wrap;
+  align-items: center;
+  height: 1vw;
+}
+
+.filter-btn {
+  cursor: pointer;
+  width: 1.3vw;
+  margin-left: 15px;
+
+}
+
+.filter-form {
+  width: 25vw;
+  font-size: 0.9vw;
+}
+
+h5,
+h3 {
+  text-align: center;
+}
+
 .no-event {
   text-align: center;
   width: 100%;
