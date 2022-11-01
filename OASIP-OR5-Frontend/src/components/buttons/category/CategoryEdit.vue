@@ -1,138 +1,110 @@
-<script setup>
-import { ref } from "vue";
-
-defineEmits(["moreDetail", "editDetail"]);
+<script setup>//Test
+import { computed } from 'vue'
+defineEmits(['updateClinic'])
 const props = defineProps({
-  detail: {
+  currentClinic: {
     type: Object,
-    require: true,
+    default: {}
   },
-  category: {
-    type: Array,
-    require: true,
+  errorClinicName: {
+    type: Boolean,
+    default: false
   },
-  name: {
-    type: String,
-    require: true,
+  notUnique: {
+    type: Boolean,
+    default: false
   },
-  description: {
-    type: String,
-    require: true,
+  errorDuration: {
+    type: Boolean,
+    default: false
   },
-  duration: {
-    type: Number,
-    require: true,
-  },
-});
+  wrongDuration: {
+    type: Boolean,
+    default: false
+  }
+})
 
-const isModalOn = ref(false);
-const isunique = ref(false);
-const error = ref(false);
+const newClinic = computed(() => {
+  return {
+    id: props.currentClinic.id,
+    eventCategoryName: props.currentClinic.eventCategoryName,
+    eventCategoryDescription: props.currentClinic.eventCategoryDescription,
+    eventDuration: props.currentClinic.eventDuration
+  }
+})
 
-const unique = (name, id) => {
-  props.category.forEach((e) => {
-    if (e.id != id) {
-      if (e.eventCategoryName == name) {
-        isunique.value = true;
-        error.value = true;
-      }
-    }
-  });
-};
 </script>
-
+ 
 <template>
-  <button class="m-2 w-10 p-3 edit">
-    <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor"
-      stroke-width="2" @click="$emit('moreDetail'); isModalOn = !isModalOn; error = false; name = detail.eventCategoryName; description = detail.eventCategoryDescription; duration = detail.eventDuration;
-      ">
-      <path stroke-linecap="round" stroke-linejoin="round"
-        d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-    </svg>
-  </button>
-
-  <div v-show="isModalOn" class="modal-show flex justify-center">
-    <div class="modal-content bg-base-100 rounded-2xl">
-      <div class="flex justify-end">
-        <!-- <button class="close" @click="isModalOn = !isModalOn">x</button> -->
-        <button class="btn btn-circle btn-outline" @click="isModalOn = !isModalOn">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-          </svg>
-        </button>
-      </div>
-      <div class="flex justify-center">
-        <div>
-          <form method="post" @submit.prevent="$emit('editDetail', detail.id, name, description, duration, isunique);
-          isunique == true ? isModalOn : (isModalOn = !isModalOn);
-          isunique = false;">
-            <div v-show="isModalOn" class="text-base font-medium grid justify-center py-2">
-              <p class="grid justify-center font-bold text-4xl mb-4 font-header">
-                Category Name
-              </p>
-              <input type="text" v-model="name" class="text-black p-1 m-1 rounded-md" maxlength="100" required />
-              <p class="text-red-600" v-show="error">
-                CategoryName must be unique!
-              </p>
-            </div>
-            <div class="text-base font-medium grid justify-center py-2">
-              <div v-show="isModalOn">
-                <p class="grid justify-center font-bold text-2xl mb-4 font-header">
-                  Description
-                </p>
-                <textarea cols="60" rows="4" maxlength="500" v-model="description"
-                  class="text-black p-2 m-1 rounded-md"></textarea>
-              </div>
-            </div>
-            <div class="text-lg font-medium grid justify-center py-2">
-              <p>
-                Duration :
-                <input type="number" min="1" max="480" v-model="duration" class="text-black p-1 m-1 rounded-md"
-                  required />
-                <span>min: 1 | max: 480</span>
-              </p>
-            </div>
-            <div class="flex justify-end">
-              <input class="btn btn-active m-2" v-show="isModalOn" type="submit" value="OK"
-                @click="unique(name, detail.id)" />
-              <input class="btn btn-active m-2" v-show="isModalOn" type="button" value="Cancel"
-                @click="isModalOn = !isModalOn" />
-            </div>
-          </form>
-        </div>
-      </div>
-    </div>
+  <div class="grid justify-center py-2">
+    <p class="text-lg font-medium">
+      <span class="font-bold">Clinic :</span>
+      <input class="text-black p-1 m-1 rounded-md" maxlength="100" v-model="newClinic.eventCategoryName"
+        :class="{ 'border border-danger': errorClinicName || notUnique }">
+    <p class="error-edit-clinic" v-if="errorClinicName === true">Enter Clinic name.</p>
+    <p class="error-edit-clinic" v-if="notUnique === true">Clinic Name is already taken.</p>
+    </p>
   </div>
+
+  <div class="grid justify-center py-2">
+    <p class="text-lg font-medium">
+      <span class="font-bold">Duration :</span>
+      <input type="number" min="1" max="480" class="text-black p-1 m-1 rounded-md" v-model="newClinic.eventDuration"
+        :class="{ 'border border-danger': errorDuration || wrongDuration }">
+      <span class="font-bold"> min: 1 | max: 480 </span>
+    <p class="error-edit-clinic" v-if="errorDuration === true">Enter Duration.</p>
+    <p class="error-edit-clinic" v-if="wrongDuration === true">Duration must between 1 and 480.</p>
+    </p>
+  </div>
+
+  <div class="grid justify-center py-2">
+    <p class="text-lg font-medium">
+      <span class="font-bold">Description :</span>
+    </p>
+    <textarea class="text-black p-2 m-1 rounded-md" rows="3" maxlength="500" style="height: 7.5vw; width: 20.5vw;"
+      v-model="newClinic.eventCategoryDescription"></textarea>
+  </div>
+
+  <button type="button" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded text-xl"
+    style="margin-right: 2vw; margin-top: 0.2vw;margin-bottom: 1.2vw;"
+    @click="$emit('updateClinic', newClinic)">Save</button>
 </template>
-
-<style scoped>
-.auto-fill {
-  color: #8f8f8f;
+ 
+<style>
+.edit-clinic-label {
+  text-align: left;
+  font-size: 0.9vw;
+  font-weight: bold;
+  margin-left: 8%;
 }
 
-.font-header {
-  color: #2E86C1;
+.edit-clinic-input {
+  width: 28vw;
+  height: 2vw;
+  margin-right: auto;
+  margin-left: auto;
+  font-size: 0.9vw;
+  margin-bottom: 1.2vw;
 }
 
-.modal-content {
-  margin: auto;
-  padding: 20px;
-  width: 550px;
+.error-edit-clinic {
+  color: red;
+  text-align: left;
+  font-size: 0.7vw;
+  margin-top: -0.8vw;
+  margin-left: 9%;
 }
 
-.modal-show {
-  position: fixed;
-  z-index: 1;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  overflow: auto;
-  background-color: rgb(32, 32, 32);
-  background-color: rgba(73, 73, 73, 0.4);
+.maxClinic {
+  width: 8vw;
+  text-align: right;
+  font-size: 0.7vw;
+  color: #888888;
+  font-weight: 100;
 }
 
-.edit:hover {
-  color: #3498DB;
+.edit-clinic-line {
+  margin-left: 8%;
+  margin-bottom: 0.5vw;
 }
 </style>
