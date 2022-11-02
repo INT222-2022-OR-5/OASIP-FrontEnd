@@ -1,9 +1,6 @@
 <script setup>
 import { ref, onBeforeMount } from 'vue'
 import EventList from "./buttons/event/EventList.vue";
-import EventDetail from "./buttons/event/EventDetail.vue";
-import EventCreate from "./buttons/event/EventCreate.vue";
-import EventDelete from "./buttons/event/EventDelete.vue";
 import EventNavbar from "./buttons/event/EventNavbar.vue";
 import moment from 'moment'
 
@@ -134,6 +131,8 @@ const cancelEdit = () => {
     location.reload()
   }
 }
+
+const userRole = localStorage.getItem("role")
 </script>
  
 <template>
@@ -166,9 +165,11 @@ const cancelEdit = () => {
         <tr>
           <EventNavbar />
           <th>
-            <button class="btn btn-outline text-xl font-extrabold px-10">
-              CREATE
-            </button>
+            <router-link :to="{ name: 'createEvent' }">
+              <button class="btn btn-outline text-xl font-extrabold px-10" v-if="userRole === 'admin' || userRole === 'student'">
+                CREATE
+              </button>
+            </router-link>
           </th>
         </tr>
       </thead>

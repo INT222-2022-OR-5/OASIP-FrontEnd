@@ -141,7 +141,7 @@ const uniqueemail = (email, id) => {
       </div>
       <div class="flex justify-center py-4">
         <button v-show="!edit" @click="edit = !edit" class="pl-2">
-          <button class="btn btn-warning">Edit</button>
+          <button class="btn btn-warning edit-event-btn detail-btn-each">Edit</button>
         </button>
       </div>
     </div>

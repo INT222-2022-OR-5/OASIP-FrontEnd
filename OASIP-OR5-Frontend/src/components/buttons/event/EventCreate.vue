@@ -1,227 +1,234 @@
 <script setup>
-import { ref, onBeforeMount } from "vue";
-import moment from "moment";
+import { ref, onBeforeMount } from 'vue'
+import moment from 'moment';
+import EventManage from './EventManage.vue'
 
-defineEmits(["create"]);
+const newAccess = ref()
+let token = localStorage.getItem("token")
+const userRole = localStorage.getItem("role")
+const refreshToken = localStorage.getItem("refreshToken");
 
-const props = defineProps({
-  detail: {
-    type: Array,
-    require: true,
-  },
-});
+const RefreshToken = async () => {
+  const res = await fetch(`${import.meta.env.BASE_URL}api/refresh-token`, {
+    method: 'get',
+    headers: {
+      Authorization: `Bearer ${refreshToken}`
+    }
+  }
+  );
+  if (res.status === 200) {
+    newAccess.value = await res.json()
+    refresh()
+    getEventCategory()
+  } else if (res.status === 401) {
+    localStorage.clear()
+    window.location.href = "/or5"
+    console.log("Please sign out your account");
+  }
+};
 
-const isModalOn = ref(false);
-const category = ref([]);
+const refresh = () => {
+  token = localStorage.setItem('token', `${newAccess.value.access_token}`)
+}
 
-// GET
-const getCategories = async () => {
+const categories = ref([])
+const getEventCategory = async () => {
   const res = await fetch(`${import.meta.env.BASE_URL}api/eventCategory`, {
+    method: 'GET',
+
+  })
+  if (res.status === 200) {
+    categories.value = await res.json()
+  } else if (res.status === 401 && token !== null) {
+    RefreshToken();
+  }
+}
+
+const users = ref([]);
+const getUser = async () => {
+  const res = await fetch(`${import.meta.env.BASE_URL}api/users`, {
     method: "GET",
     headers: {
       Authorization: `Bearer ${localStorage.getItem("token")}`,
     },
   });
   if (res.status === 200) {
-    category.value = await res.json();
+    users.value = await res.json();
+    users.value.sort();
   } else if (res.status === 401 && token !== null) {
     RefreshToken();
-  } else console.log("Error, cannot get data");
+  }
 };
 
 onBeforeMount(async () => {
-  await getCategories();
-});
-const Name = ref("");
-const Email = ref("");
-const Selected = ref();
-const Time = ref();
-const Duration = ref();
-const Notes = ref("");
-const selectedId = ref();
+  await getEventCategory();
+  await getUser()
+})
 
-const isOverlap = ref(false);
-const error = ref(false);
-const errorname = ref(false);
-const overlap = () => {
-  var startTime = moment(Time.value).format();
-  var endTime = moment(Time.value).add(Duration.value, "minutes").format();
-  props.detail.forEach((e) => {
-    if (e.id === selectedId.value) {
-      var startTime_2 = e.eventStartTime;
-      var endTime_2 = moment(e.eventStartTime)
-        .add(e.eventDuration, "minute")
-        .format();
-      if (checkOverlap(startTime, endTime, startTime_2, endTime_2)) {
-        isOverlap.value = true;
-        error.value = true;
-        console.log("Overlap");
-      }
+const addAlert = ref(false)
+const errorName = ref(false)
+const errorClinic = ref(false)
+const errorEmail = ref(false)
+const errorTime = ref(false)
+const mailVali = ref(true)
+const errorFuture = ref(false)
+const overlap = ref(false)
+
+const createEvent = async (event) => {
+  if (userRole === 'guest') {
+    if (event.bookingName == null || event.bookingName == '') {
+      errorName.value = true
+    } else {
+      errorName.value = false
     }
-  });
-};
-
-const checkOverlap = (start_1, end_1, start_2, end_2) => {
-  if (start_1 <= start_2 && start_2 <= end_1) return true;
-  if (start_1 <= end_2 && end_2 <= end_1) return true;
-  if (start_2 < start_1 && end_1 < end_2) return true;
-  return false;
-};
-
-const newDuration = () => {
-  category.value.forEach((category) => {
-    if (category.eventCategoryName === Selected.value) {
-      Duration.value = category.eventDuration;
-      selectedId.value = category.id;
+    if (event.bookingEmail == null || event.bookingEmail == '') {
+      errorEmail.value = true
+    } else {
+      errorEmail.value = false
     }
-  });
-};
-
-const date = ref();
-function updateTime() {
-  date.value = moment().format("YYYY-MM-DDTHH:mm:ss");
-}
-const realTime = () => {
-  setInterval(updateTime, 1000);
-};
-realTime();
-
-const empty = (name) => {
-  if (name.trim() == "") {
-    errorname.value = true;
-    isOverlap.value = true;
-  } else {
-    errorname.value = false;
   }
-};
-</script>
+  else if (userRole !== 'guest') {
+    if (Object.keys(event.user).length === 0) {
+      errorName.value = true
+    } else {
+      errorName.value = false
+    }
+  }
 
+  if (Object.keys(event.eventCategory).length === 0) {
+    errorClinic.value = true
+  } else {
+    errorClinic.value = false
+  }
+
+  if (event.eventStartTime === null || event.eventStartTime == '') {
+    errorTime.value = true
+  } else {
+    errorTime.value = false
+  }
+  if (moment(event.eventStartTime).isAfter(moment(new Date()))) {
+    errorFuture.value = false
+  } else {
+    errorFuture.value = true
+  }
+
+  // var emailValidate = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+
+  // if (event.bookingEmail.match(emailValidate)) {
+  //     mailVali.value = true
+  // } else {
+  //     mailVali.value = false
+  //     console.log('not validate');
+  // }
+
+  if (errorName.value == true || errorClinic.value == true || errorTime.value == true || errorFuture.value == true || mailVali.value == false) {
+    return
+  }
+
+  if (userRole === 'admin') {
+    const res = await fetch(`${import.meta.env.BASE_URL}api/events`, {
+      method: 'POST',
+      headers: {
+        'content-Type': 'application/json',
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+      body: JSON.stringify({
+        eventCategory: {
+          id: event.eventCategory.id
+        },
+        user: {
+          email: event.user.email
+        },
+        bookingName: event.user.name,
+        bookingEmail: event.user.email,
+        eventStartTime: event.eventStartTime,
+        eventDuration: event.eventCategory.eventDuration,
+        eventNotes: event.eventNotes.trim()
+      })
+    })
+    if (res.status == 201 || res.status == 200) {
+      console.log('added successfully');
+      alert("Created Successfully")
+      window.location.href = "/event";
+      addAlert.value = true
+    } else if (res.status == 400) {
+      overlap.value = true
+      console.log('error, can not add');
+    }
+
+  } else if (userRole === 'student') {
+    const res = await fetch(`${import.meta.env.BASE_URL}api/events`, {
+      method: 'POST',
+      headers: {
+        'content-Type': 'application/json',
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+      body: JSON.stringify({
+        eventCategory: {
+          id: event.eventCategory.id
+        },
+        user: {
+          email: event.user.email
+        },
+        bookingName: event.bookingName.trim(),
+        bookingEmail: event.user.email.trim(),
+        eventStartTime: event.eventStartTime,
+        eventDuration: event.eventCategory.eventDuration,
+        eventNotes: event.eventNotes.trim()
+      })
+    })
+    if (res.status == 201 || res.status == 200) {
+      console.log('added successfully');
+      alert("Created Successfully")
+      window.location.href = "/event";
+      addAlert.value = true
+    } else if (res.status == 400) {
+      overlap.value = true
+      console.log('error, can not add');
+    }
+  } else if (userRole === 'guest') {
+    const res = await fetch(`${import.meta.env.BASE_URL}api/events/guest`, {
+      method: 'POST',
+      headers: {
+        'content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        eventCategory: {
+          id: event.eventCategory.id
+        },
+        user: null,
+        bookingName: event.bookingName.trim(),
+        bookingEmail: event.bookingEmail.trim(),
+        eventStartTime: event.eventStartTime,
+        eventDuration: event.eventCategory.eventDuration,
+        eventNotes: event.eventNotes.trim()
+      })
+    })
+    if (res.status == 201 || res.status == 200) {
+      console.log('added successfully');
+      alert("Created Successfully")
+      window.location.href = "/event";
+      addAlert.value = true
+    } else if (res.status == 400) {
+      overlap.value = true
+      console.log('error, can not add');
+    }
+  }
+
+}
+
+const loginAlert = ref(true)
+
+</script>
+ 
 <template>
-  <div id="create">
-    <button class="btn btn-outline text-xl font-extrabold px-10"
-      @click="Name = ''; Email = ''; Selected = undefined; Time = undefined; Duration = undefined; Notes = ''; error = false; errorname = false; isModalOn = !isModalOn;">
-      CREATE
-    </button>
-    <div v-show="isModalOn" class="modal-show flex justify-center">
-      <div class="modal-content bg-base-100 rounded-2xl">
-        <div class="flex justify-end">
-          <!-- <button class="close" @click="isModalOn = !isModalOn">x</button> -->
-          <button class="btn btn-square btn-outline" @click="isModalOn = !isModalOn">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
-              stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-            </svg>
-          </button>
-        </div>
-        <!-- form -->
-        <form method="post"
-          @submit.prevent="$emit('create', Name, Email, selectedId, Time, Duration, Notes, isOverlap);
-          Name == '' || Email == '' || Selected == undefined || Time == undefined || isOverlap == true ? isModalOn : (isModalOn = !isModalOn); isOverlap = false;">
-          <!-- Name -->
-          <div class="grid justify-center">
-            <label for="name">Name
-              <span class="auto-fill">({{ Name.length }}/100)</span></label>
-            <div class="py-3">
-              <input type="text" v-model="Name" maxlength="100" class="form-element bg-base-100 italic"
-                placeholder="Please enter your name" required />
-              <!-- <p class="text-red-600" v-show="errorname">Error!!!</p> -->
-            </div>
-            <!-- Email -->
-            <label for="Email">Email
-              <span class="auto-fill">({{ Email.length }}/50)</span></label>
-            <div class="py-3">
-              <input type="email" v-model="Email" maxlength="50" class="form-element bg-base-100 border-b-2 italic"
-                placeholder="Please enter your email" required />
-            </div>
-            <!-- Clinic -->
-            <label for="clinics">Clinic</label>
-            <div class="py-3">
-              <select name="clinics" class="form-element bg-base-100 border-b-2 italic" @change="newDuration"
-                v-model="Selected" required>
-                <option v-for="categories in category" :value="categories.eventCategoryName">
-                  {{ categories.eventCategoryName }}
-                </option>
-              </select>
-            </div>
-            <!-- Date -->
-            <label for="Date">Date</label>
-            <div class="py-3">
-              <input type="datetime-local" v-model="Time" :min="date" step="any" class="text-black form-element"
-                required />
-              <p class="text-red-600" v-show="error">
-                this start time is overlapped other event
-              </p>
-            </div>
-            <!-- Duration -->
-            <label for="Duration">Duration (minutes)</label>
-            <div class="py-3">
-              <input class="bg-base-100 border-b-2 italic focus:outline-none pointer-events-none form-element" readonly
-                type="text" v-model="Duration" placeholder="Select your clinic" />
-            </div>
-            <!-- Note -->
-            <label for="Note">Note
-              <span class="auto-fill">({{ Notes.length }}/500)</span></label>
-            <div class="py-3">
-              <textarea cols="50" rows="2" v-model="Notes" maxlength="500"
-                class="bg-base-100 border-b-2 italic p-2 form-element" placeholder="Your message"></textarea>
-            </div>
-          </div>
-          <div class="flex justify-end pt-2">
-            <!-- Create -->
-            <input class="btn btn-active" type="submit" value="Create" @click="overlap(); empty(Name);" />
-          </div>
-        </form>
-      </div>
-    </div>
+  <div class="body">
+    <EventManage :categoryList="categories" :userList="users" :errorName="errorName" :errorClinic="errorClinic"
+      :errorEmail="errorEmail" :errorTime="errorTime" :mailVali="mailVali" :errorFuture="errorFuture" :overlap="overlap"
+      @create="createEvent" />
   </div>
 </template>
-
+ 
 <style>
-.form-element {
-  border-color: #494a7d;
-  border-radius: 5px;
-  padding: 10px;
-  border-width: 2px;
-  width: 100%;
-}
 
-.form-element:focus {
-  outline: none !important;
-  border: 2px solid #fcc302;
-}
-
-.modal-content {
-  margin: auto;
-  padding: 20px;
-  width: 500px;
-}
-
-.modal-show {
-  position: fixed;
-  z-index: 1;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  overflow: auto;
-  background-color: rgb(32, 32, 32);
-  background-color: rgba(73, 73, 73, 0.4);
-}
-
-.close {
-  color: #aaaaaa;
-  font-size: 28px;
-  font-weight: bold;
-}
-
-.close:hover,
-.close:focus {
-  color: rgb(82, 80, 80);
-  text-decoration: none;
-  cursor: pointer;
-}
-
-.auto-fill {
-  color: #8f8f8f;
-}
 </style>

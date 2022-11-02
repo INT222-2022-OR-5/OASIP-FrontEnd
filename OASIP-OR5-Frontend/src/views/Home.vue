@@ -1,4 +1,5 @@
 <script setup>
+let token = localStorage.getItem("token")
 </script>
 
 <template>
@@ -13,9 +14,14 @@
         <p class="leading-normal text-base md:text-2xl mb-8 text-center md:text-left slide-in-bottom-subtitle">
           Online Appointment Scheduling System for Integrated Project Clinics
         </p>
-        <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 border border-blue-700 rounded slide-in-bottom-subtitle">
-          Booking As Guest
-        </button>
+        <div v-if="(token === null)">
+          <router-link :to="{ name: 'home' }">
+            <button
+              class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 border border-blue-700 rounded slide-in-bottom-subtitle">
+              Booking As Guest
+            </button>
+          </router-link>
+        </div>
       </div>
       <!--Right Col-->
       <div class="w-full xl:w-3/5 py-6 overflow-y-hidden">

@@ -8,6 +8,7 @@ import LoginUser from "../components/LoginUser.vue"
 import NotFound from "../views/NotFound.vue"
 import SignUp from "../components/SignupUser.vue"
 import CreateUser from "../components/buttons/user/UserCreate.vue"
+import CreateEvent from "../components/buttons/event/EventCreate.vue"
 
 const history = createWebHistory('/or5/')
 const routes = [
@@ -55,6 +56,11 @@ const routes = [
         path: '/create-user',
         name: 'createUser',
         component: CreateUser,
+    },
+    {
+        path: '/create-event',
+        name: 'createEvent',
+        component: CreateEvent,
     },
 ]
 
