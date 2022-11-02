@@ -106,7 +106,7 @@ const createUser = async (user) => {
   });
   if (res.status == 201 || res.status == 200) {
     console.log("added successfully");
-    window.location.href = "/user";
+    window.location.href = "/or5/user";
     alert("Sign-up Successfully")
   } else if (res.status == 400) {
     errorStatus.value = await res.json()

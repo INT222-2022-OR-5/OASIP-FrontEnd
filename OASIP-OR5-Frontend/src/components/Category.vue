@@ -22,8 +22,8 @@ const RefreshToken = async () => {
     getEventCategory()
   } else if (res.status === 401) {
     localStorage.clear()
-    window.location.href = "/sy6"
-    console.log("plz log out");
+    window.location.href = "/or5"
+    console.log("Please sign out your account");
   }
 };
 

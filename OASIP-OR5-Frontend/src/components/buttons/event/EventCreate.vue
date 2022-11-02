@@ -149,7 +149,7 @@ const createEvent = async (event) => {
     if (res.status == 201 || res.status == 200) {
       console.log('added successfully');
       alert("Created Successfully")
-      window.location.href = "/event";
+      window.location.href = "/or5/event";
       addAlert.value = true
     } else if (res.status == 400) {
       overlap.value = true
@@ -180,7 +180,7 @@ const createEvent = async (event) => {
     if (res.status == 201 || res.status == 200) {
       console.log('added successfully');
       alert("Created Successfully")
-      window.location.href = "/event";
+      window.location.href = "/or5/event";
       addAlert.value = true
     } else if (res.status == 400) {
       overlap.value = true
@@ -207,7 +207,7 @@ const createEvent = async (event) => {
     if (res.status == 201 || res.status == 200) {
       console.log('added successfully');
       alert("Created Successfully")
-      window.location.href = "/event";
+      window.location.href = "/or5/event";
       addAlert.value = true
     } else if (res.status == 400) {
       overlap.value = true
