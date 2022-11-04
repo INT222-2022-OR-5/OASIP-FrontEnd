@@ -6,6 +6,7 @@ import UserList from "../views/UserList.vue"
 import AboutUs from "../views/AboutUs.vue"
 import LoginUser from "../components/LoginUser.vue"
 import NotFound from "../views/NotFound.vue"
+import Forbidden from "../views/Forbidden.vue"
 import SignUp from "../components/SignupUser.vue"
 import CreateUser from "../components/buttons/user/UserCreate.vue"
 import CreateEvent from "../components/buttons/event/EventCreate.vue"
@@ -46,6 +47,11 @@ const routes = [
         path: '/:catchNotMatchPath(.*)',
         name: 'NotFound',
         component: NotFound,
+    },
+    {
+        path: '/forbidden',
+        name: 'forbidden',
+        component: Forbidden,
     },
     {
         path: '/sign-up',

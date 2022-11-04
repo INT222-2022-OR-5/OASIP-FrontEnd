@@ -9,6 +9,7 @@ import { ref, onBeforeMount } from "vue";
 const users = ref([]);
 const newAccess = ref()
 let token = localStorage.getItem("token")
+const role = localStorage.getItem("role")
 const refreshToken = localStorage.getItem("refreshToken");
 
 const RefreshToken = async () => {
@@ -46,7 +47,9 @@ const getUsers = async () => {
     users.value = await res.json();
     console.log("User can get data");
   } else if (res.status === 401 && token !== null) {
-    RefreshToken();
+    RefreshToken();{}
+  } else if (role === 'lecturer' || role === 'student') {
+    window.location.href = "/forbidden"
   } else console.log("Error, cannot get data");
 };
 
@@ -105,12 +108,9 @@ const moreDetail = (curUserId) => {
   currentDetail.value = curUserId;
   getUsers();
 };
-
-
 </script>
 
 <template>
-
   <div v-if="token == null">
     <div class="w-full md:w-1/3 mx-auto">
       <div class="flex flex-col p-5 rounded-lg shadow bg-white">
@@ -140,7 +140,6 @@ const moreDetail = (curUserId) => {
         <tr>
           <UserNavbar />
           <th>
-            <!-- <UserCreate @create="createNewUsers" :users="users" /> -->
             <router-link :to="{ name: 'createUser' }">
               <button class="btn btn-outline text-xl font-extrabold px-10">CREATE</button>
             </router-link>

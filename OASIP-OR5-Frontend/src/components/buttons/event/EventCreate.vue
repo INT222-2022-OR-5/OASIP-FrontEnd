@@ -57,6 +57,8 @@ const getUser = async () => {
     users.value.sort();
   } else if (res.status === 401 && token !== null) {
     RefreshToken();
+  } else if (userRole === 'lecturer') {
+    window.location.href = "/forbidden"
   }
 };
 
@@ -214,11 +216,7 @@ const createEvent = async (event) => {
       console.log('error, can not add');
     }
   }
-
 }
-
-const loginAlert = ref(true)
-
 </script>
  
 <template>

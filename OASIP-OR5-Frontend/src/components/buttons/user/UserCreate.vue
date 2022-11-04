@@ -1,5 +1,9 @@
 <script setup>
 import { ref, onBeforeMount } from "vue";
+import { useRouter } from "vue-router";
+
+const appRouter = useRouter();
+const homeRouter = () => appRouter.push({ name: "home" });
 
 const newUser = ref({
   name: "",
@@ -22,6 +26,28 @@ const invaildAddEmail = ref(false);
 const notMatch = ref(false);
 const errorConfirm = ref(false);
 const passLess = ref(false);
+
+const users = ref([]);
+const getUser = async () => {
+  const res = await fetch(`${import.meta.env.BASE_URL}api/users`, {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem("token")}`,
+    },
+  });
+  if (res.status === 200) {
+    users.value = await res.json();
+    users.value.sort();
+  } else if (res.status === 401 && token !== null) {
+    RefreshToken();
+  } else if (userRole === 'lecturer') {
+    window.location.href = "/forbidden"
+  }
+};
+
+onBeforeMount(async () => {
+  await getUser()
+})
 
 const createUser = async (user) => {
   if (user.name == null || user.name == "") {
@@ -113,10 +139,20 @@ const createUser = async (user) => {
     console.log(errorStatus.value);
   }
 };
+
+const userRole = localStorage.getItem("role")
 </script>
       
 <template>
-  <div class="body">
+  <div v-if="userRole === 'lecturer' || role === 'student'">
+    <div class="text-center">
+        <img class="mt-32 mx-auto" src='../user/assets/forbidden.png' alt="" width="500" height="600" />
+        <button @click.left="homeRouter" class="btn mt-5 text-base px-10">Go To Home Page</button>
+    </div>
+  </div>
+
+
+  <div v-else class="body">
     <div class="flex justify-center">
       <div class="modal-content-box bg-base-200 rounded-2xl">
 
@@ -135,8 +171,6 @@ const createUser = async (user) => {
 
         <form>
           <div class="grid justify-center">
-            <!-- <label for="name" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Name (
-                            <span v-text="newUser.name.length"></span>/100 )</label> -->
             <table class="signup-line">
               <tr>
                 <th class="maxSignup" :class="{ 'maxinput': newUser.name.length == 100 }">
@@ -155,8 +189,6 @@ const createUser = async (user) => {
           </div>
 
           <div class="grid justify-center">
-            <!-- <label for="email" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Email (
-                            <span v-text="newUser.email.length"></span>/50 )</label> -->
             <table class="signup-line">
               <tr>
                 <th class="maxSignup" :class="{ 'maxinput': newUser.email.length == 50 }">
@@ -180,9 +212,6 @@ const createUser = async (user) => {
           </div>
 
           <div class="grid justify-center">
-            <!-- <label for="password"
-                            class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Password (
-                            <span v-text="newUser.password.length"></span>/14 )</label> -->
             <table class="signup-line">
               <tr>
                 <th class="maxSignup" :class="{ 'maxinput': newUser.password.length == 14 }">
@@ -202,9 +231,6 @@ const createUser = async (user) => {
           </div>
 
           <div class="grid justify-center">
-            <!-- <label for="confirm-password"
-                            class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Confirm Password (
-                            <span v-text="newUser.confirmPassword.length"></span>/14 )</label> -->
             <table class="signup-line">
               <tr>
                 <th class="maxSignup" :class="{ 'maxinput': newUser.confirmPassword.length == 14 }">
@@ -223,8 +249,6 @@ const createUser = async (user) => {
           </div>
 
           <div class="grid justify-center">
-            <!-- <label for="role"
-                            class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Role</label> -->
             <table class="signup-line">
               <tr>
                 <th class="maxSignup">
