@@ -15,7 +15,7 @@ let token = localStorage.getItem("token")
           Online Appointment Scheduling System for Integrated Project Clinics
         </p>
         <div v-if="(token === null)">
-          <router-link :to="{ name: 'home' }">
+          <router-link :to="{ name: 'createGuest' }">
             <button
               class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 border border-blue-700 rounded slide-in-bottom-subtitle">
               Booking As Guest

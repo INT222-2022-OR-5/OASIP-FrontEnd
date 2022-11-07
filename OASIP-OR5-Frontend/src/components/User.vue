@@ -5,6 +5,10 @@ import UserDetail from "./buttons/user/UserDetail.vue";
 import UserDelete from "./buttons/user/UserDelete.vue";
 
 import { ref, onBeforeMount } from "vue";
+import { useRouter } from "vue-router";
+
+const appRouter = useRouter();
+const homeRouter = () => appRouter.push({ name: "home" });
 
 const users = ref([]);
 const newAccess = ref()
@@ -35,6 +39,8 @@ const refresh = () => {
   token = localStorage.setItem('token', `${newAccess.value.accessToken}`)
 }
 
+const cantReach = ref(false)
+
 // GET
 const getUsers = async () => {
   const res = await fetch(`${import.meta.env.BASE_URL}api/users`, {
@@ -44,12 +50,13 @@ const getUsers = async () => {
     },
   });
   if (res.status === 200) {
+    cantReach.value = false
     users.value = await res.json();
     console.log("User can get data");
   } else if (res.status === 401 && token !== null) {
-    RefreshToken();{}
-  } else if (role === 'lecturer' || role === 'student') {
-    window.location.href = "/forbidden"
+    RefreshToken(); { }
+  } else if (res.status === 403) {
+    cantReach.value = true
   } else console.log("Error, cannot get data");
 };
 
@@ -132,6 +139,11 @@ const moreDetail = (curUserId) => {
         </router-link>
       </div>
     </div>
+  </div>
+
+  <div v-else-if="cantReach = true && role !== 'admin'" class="text-center">
+    <img class="mx-auto" src='../assets/forbidden.png' alt="" width="500" height="600" />
+    <button @click.left="homeRouter" class="btn mt-5 text-base px-10">Go To Home Page</button>
   </div>
 
   <div v-else id="contents-list" class="px-10 py-5 flex justify-center">

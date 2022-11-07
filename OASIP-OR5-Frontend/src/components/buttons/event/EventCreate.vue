@@ -10,7 +10,7 @@ const refreshToken = localStorage.getItem("refreshToken");
 
 const RefreshToken = async () => {
   const res = await fetch(`${import.meta.env.BASE_URL}api/refresh-token`, {
-    method: 'get',
+    method: 'GET',
     headers: {
       Authorization: `Bearer ${refreshToken}`
     }
@@ -47,7 +47,7 @@ const getEventCategory = async () => {
 const users = ref([]);
 const getUser = async () => {
   const res = await fetch(`${import.meta.env.BASE_URL}api/users`, {
-    method: "GET",
+    method: 'GET',
     headers: {
       Authorization: `Bearer ${localStorage.getItem("token")}`,
     },
@@ -58,7 +58,7 @@ const getUser = async () => {
   } else if (res.status === 401 && token !== null) {
     RefreshToken();
   } else if (userRole === 'lecturer') {
-    window.location.href = "/forbidden"
+    window.location.href = "/or5/forbidden"
   }
 };
 
@@ -149,13 +149,13 @@ const createEvent = async (event) => {
       })
     })
     if (res.status == 201 || res.status == 200) {
-      console.log('added successfully');
+      console.log('Created Successfully');
       alert("Created Successfully")
       window.location.href = "/or5/event";
       addAlert.value = true
     } else if (res.status == 400) {
       overlap.value = true
-      console.log('error, can not add');
+      console.log('Error, Can not add');
     }
 
   } else if (userRole === 'student') {
@@ -180,13 +180,13 @@ const createEvent = async (event) => {
       })
     })
     if (res.status == 201 || res.status == 200) {
-      console.log('added successfully');
+      console.log('Created Successfully');
       alert("Created Successfully")
       window.location.href = "/or5/event";
       addAlert.value = true
     } else if (res.status == 400) {
       overlap.value = true
-      console.log('error, can not add');
+      console.log('Error, Can not add');
     }
   } else if (userRole === 'guest') {
     const res = await fetch(`${import.meta.env.BASE_URL}api/events/guest`, {
@@ -207,19 +207,25 @@ const createEvent = async (event) => {
       })
     })
     if (res.status == 201 || res.status == 200) {
-      console.log('added successfully');
+      console.log('Created Successfully');
       alert("Created Successfully")
       window.location.href = "/or5/event";
       addAlert.value = true
     } else if (res.status == 400) {
       overlap.value = true
-      console.log('error, can not add');
+      console.log('Error, Can not add');
     }
   }
 }
 </script>
  
 <template>
+  <div v-if="userRole === 'lecturer'">
+        <div class="mx-auto">
+            <p>403</p>
+        </div>
+    </div>
+
   <div class="body">
     <EventManage :categoryList="categories" :userList="users" :errorName="errorName" :errorClinic="errorClinic"
       :errorEmail="errorEmail" :errorTime="errorTime" :mailVali="mailVali" :errorFuture="errorFuture" :overlap="overlap"

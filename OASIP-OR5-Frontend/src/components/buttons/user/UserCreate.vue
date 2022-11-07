@@ -27,6 +27,8 @@ const notMatch = ref(false);
 const errorConfirm = ref(false);
 const passLess = ref(false);
 
+const cantReach = ref(false)
+
 const users = ref([]);
 const getUser = async () => {
   const res = await fetch(`${import.meta.env.BASE_URL}api/users`, {
@@ -36,12 +38,13 @@ const getUser = async () => {
     },
   });
   if (res.status === 200) {
+    cantReach.value = false
     users.value = await res.json();
     users.value.sort();
   } else if (res.status === 401 && token !== null) {
     RefreshToken();
-  } else if (userRole === 'lecturer') {
-    window.location.href = "/forbidden"
+  } else if (res.status === 403) {
+    cantReach.value = true
   }
 };
 
@@ -144,7 +147,12 @@ const userRole = localStorage.getItem("role")
 </script>
       
 <template>
-  <div class="body">
+  <div v-if="cantReach = true && userRole !== 'admin'" class="text-center">
+    <img class="mx-auto" src='../../../assets/forbidden.png' alt="" width="500" height="600" />
+    <button @click.left="homeRouter" class="btn mt-5 text-base px-10">Go To Home Page</button>
+  </div>
+
+  <div v-else class="body">
     <div class="flex justify-center">
       <div class="modal-content-box bg-base-200 rounded-2xl">
 

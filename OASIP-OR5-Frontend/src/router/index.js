@@ -10,6 +10,7 @@ import Forbidden from "../views/Forbidden.vue"
 import SignUp from "../components/SignupUser.vue"
 import CreateUser from "../components/buttons/user/UserCreate.vue"
 import CreateEvent from "../components/buttons/event/EventCreate.vue"
+import CreateGuest from "../components/buttons/event/EventGuest.vue"
 
 const history = createWebHistory('/or5/')
 const routes = [
@@ -67,6 +68,11 @@ const routes = [
         path: '/create-event',
         name: 'createEvent',
         component: CreateEvent,
+    },
+    {
+        path: '/create-guest',
+        name: 'createGuest',
+        component: CreateGuest,
     },
 ]
 
