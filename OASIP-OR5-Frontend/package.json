@@ -8,6 +8,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@vuepic/vue-datepicker": "^3.5.2",
     "daisyui": "^2.24.0",
     "json-server": "^0.17.0",
     "vue": "^3.2.25",

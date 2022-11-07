@@ -5,8 +5,12 @@ import CategoryList from "../views/CategoryList.vue"
 import UserList from "../views/UserList.vue"
 import AboutUs from "../views/AboutUs.vue"
 import LoginUser from "../components/LoginUser.vue"
-import NotFound from "../views/NotFound.vue";
-import SignUp from "../components/SignupUser.vue";
+import NotFound from "../views/NotFound.vue"
+import Forbidden from "../views/Forbidden.vue"
+import SignUp from "../components/SignupUser.vue"
+import CreateUser from "../components/buttons/user/UserCreate.vue"
+import CreateEvent from "../components/buttons/event/EventCreate.vue"
+import CreateGuest from "../components/buttons/event/EventGuest.vue"
 
 const history = createWebHistory('/or5/')
 const routes = [
@@ -31,7 +35,7 @@ const routes = [
         component: UserList,
     },
     {
-        path: '/aboutus',
+        path: '/about-us',
         name: 'aboutUs',
         component: AboutUs
     },
@@ -46,10 +50,30 @@ const routes = [
         component: NotFound,
     },
     {
-        path: '/signup',
+        path: '/forbidden',
+        name: 'forbidden',
+        component: Forbidden,
+    },
+    {
+        path: '/sign-up',
         name: 'signupUser',
         component: SignUp,
-    }
+    },
+    {
+        path: '/create-user',
+        name: 'createUser',
+        component: CreateUser,
+    },
+    {
+        path: '/create-event',
+        name: 'createEvent',
+        component: CreateEvent,
+    },
+    {
+        path: '/create-guest',
+        name: 'createGuest',
+        component: CreateGuest,
+    },
 ]
 
 const router = createRouter({history,routes})

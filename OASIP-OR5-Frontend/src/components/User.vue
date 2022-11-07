@@ -1,14 +1,19 @@
 <script setup>
 import UserNavbar from "./buttons/user/UserNavbar.vue";
-import UserCreate from "./buttons/user/UserCreate.vue";
+// import UserCreate from "./buttons/user/UserCreate.vue";
 import UserDetail from "./buttons/user/UserDetail.vue";
 import UserDelete from "./buttons/user/UserDelete.vue";
 
 import { ref, onBeforeMount } from "vue";
+import { useRouter } from "vue-router";
+
+const appRouter = useRouter();
+const homeRouter = () => appRouter.push({ name: "home" });
 
 const users = ref([]);
 const newAccess = ref()
 let token = localStorage.getItem("token")
+const role = localStorage.getItem("role")
 const refreshToken = localStorage.getItem("refreshToken");
 
 const RefreshToken = async () => {
@@ -34,6 +39,8 @@ const refresh = () => {
   token = localStorage.setItem('token', `${newAccess.value.accessToken}`)
 }
 
+const cantReach = ref(false)
+
 // GET
 const getUsers = async () => {
   const res = await fetch(`${import.meta.env.BASE_URL}api/users`, {
@@ -43,10 +50,13 @@ const getUsers = async () => {
     },
   });
   if (res.status === 200) {
+    cantReach.value = false
     users.value = await res.json();
     console.log("User can get data");
   } else if (res.status === 401 && token !== null) {
-    RefreshToken();
+    RefreshToken(); { }
+  } else if (res.status === 403) {
+    cantReach.value = true
   } else console.log("Error, cannot get data");
 };
 
@@ -54,43 +64,17 @@ onBeforeMount(async () => {
   await getUsers();
 });
 
-// POST
-const createNewUsers = async (Name, Email, Role, Password, isunique, error) => {
-  if (Name.trim() != "" && isunique == false && error == false) {
-    const res = await fetch(`${import.meta.env.BASE_URL}api/users/signup`, {
-      method: "POST",
-      headers: {
-        "content-type": "application/json",
-        Authorization: `Bearer ${localStorage.getItem("token")}`
-      },
-      body: JSON.stringify({
-        name: Name.trim(),
-        email: Email.trim(),
-        role: Role,
-        password: Password
-      }),
-    });
-    if (res.status === 201) {
-      getUsers();
-      console.log("Created successfully");
-    } else if (res.status === 401 && token !== null) {
-      RefreshToken();
-    } else console.log("Error, User cannot be created");
-  }
-};
-
 // DELETE
 const removeUsers = async (id) => {
   if (confirm("Do you want to delete?")) {
-    const res = await fetch(
-      `${import.meta.env.BASE_URL}api/users/${id}`, {
+    const res = await fetch(`${import.meta.env.BASE_URL}api/users/${id}`, {
       method: "DELETE",
       headers: {
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
+        Authorization: `Bearer ${localStorage.getItem("token")}`
       }
     });
     if (res.status === 200) {
-      users.value = users.value.filter((users) => users.id !== id);
+      users.value = users.value.filter((users) => users.userId !== id);
       console.log("Deleted successfullly");
     } else if (res.status === 401 && token !== null) {
       RefreshToken();
@@ -115,7 +99,9 @@ const modifyUser = async (id, newName, newEmail, newRole, isunique) => {
     });
     if (res.status === 200) {
       getUsers();
-      console.log("Updated successfully");
+      console.log("Updated successfully")
+      window.location.reload();
+      alert("Updated Successfully")
     } else if (res.status === 401 && token !== null) {
       RefreshToken();
     } else console.log("Error, User cannot be updated");
@@ -132,7 +118,6 @@ const moreDetail = (curUserId) => {
 </script>
 
 <template>
-
   <div v-if="token == null">
     <div class="w-full md:w-1/3 mx-auto">
       <div class="flex flex-col p-5 rounded-lg shadow bg-white">
@@ -156,13 +141,20 @@ const moreDetail = (curUserId) => {
     </div>
   </div>
 
+  <div v-else-if="cantReach = true && role !== 'admin'" class="text-center">
+    <img class="mx-auto" src='../assets/forbidden.png' alt="" width="500" height="600" />
+    <button @click.left="homeRouter" class="btn mt-5 text-base px-10">Go To Home Page</button>
+  </div>
+
   <div v-else id="contents-list" class="px-10 py-5 flex justify-center">
     <table class="table-zebra table-layout table-element">
       <thead class="table-header bg-base-200">
         <tr>
           <UserNavbar />
           <th>
-            <UserCreate @create="createNewUsers" :users="users" />
+            <router-link :to="{ name: 'createUser' }">
+              <button class="btn btn-outline text-xl font-extrabold px-10">CREATE</button>
+            </router-link>
           </th>
         </tr>
       </thead>
@@ -190,7 +182,7 @@ const moreDetail = (curUserId) => {
             <div>
               <UserDetail @moreDetail="moreDetail(contents)" :detail="currentDetail" :users="users"
                 @editDetail="modifyUser" />
-              <UserDelete @delete="removeUsers(contents.id)" />
+              <UserDelete @delete="removeUsers(contents.userId)" />
             </div>
           </td>
         </tr>

@@ -9,6 +9,8 @@ const error = ref(false);
 const saveLocal = () => {
   localStorage.setItem('token', `${token.value.access_token}`)
   localStorage.setItem('refreshToken', `${token.value.refresh_token}`)
+  localStorage.setItem("email", `${token.value.email}`);
+  localStorage.setItem("role", `${token.value.role}`);
 }
 
 //POST
@@ -27,9 +29,9 @@ const LoginUsers = async (email, password) => {
     error.value = false;
     token.value = await res.json();
     saveLocal();
-    window.location.href = "/"
+    window.location.href = "/or5"
     alert("Password Matched")
-    console.log("Login successfully");
+    console.log("Log-in Successfully");
     
   } else {
     error.value = true;
@@ -55,23 +57,23 @@ const LoginUsers = async (email, password) => {
             </label>
             <input type="email" v-model="email"
               class="bg-gray-50 border border-gray-300 text-gray-900 italic sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-              placeholder="Your email">
+              placeholder="Email">
           </div>
           <div>
             <label for="password" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Password</label>
-            <input type="password" v-model="password" placeholder="••••••••••••••"
+            <input type="password" v-model="password" placeholder="Password"
               class="bg-gray-50 border border-gray-300 text-gray-900 italic sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
           </div>
           <button type="submit"
             class="inline-block px-7 py-3 bg-stone-500 text-white font-medium text-sm leading-snug uppercase rounded shadow-md hover:bg-stone-400 hover:shadow-lg focus:bg-stone-400 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-blue-800 active:shadow-lg transition duration-150 ease-in-out w-full">
             Sign in
           </button>
-          <!-- <div class="text-sm font-light text-gray-500 dark:text-gray-400">
+          <div class="text-sm font-light text-gray-500 dark:text-gray-400 font-sans">
             Don’t have an account yet? <a href="#"
               class="font-medium text-primary-600 hover:underline dark:text-primary-500">
-              <router-link :to="{ name: 'userList' }">SIGN UP</router-link>
+              <router-link :to="{ name: 'signupUser' }">SIGN UP</router-link>
             </a>
-          </div> -->
+          </div>
         </form>
       </div>
     </div>
