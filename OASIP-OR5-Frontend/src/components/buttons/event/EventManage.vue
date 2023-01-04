@@ -5,11 +5,11 @@ import '@vuepic/vue-datepicker/dist/main.css';
 
 defineEmits(['create'])
 defineProps({
-    categoryList: {
+    categories: {
         type: Array,
         require: true
     },
-    userList: {
+    users: {
         type: Array,
         require: true
     },
@@ -37,6 +37,10 @@ defineProps({
         type: Boolean,
         default: false
     },
+    mailNotFound: {
+        type: Boolean,
+        default: false
+    },
     overlap: {
         type: Boolean,
         default: false
@@ -46,7 +50,15 @@ defineProps({
 const userRole = localStorage.getItem("role")
 const userEmail = localStorage.getItem("email")
 
-const newEvent = ref()
+const newEvent = ref({
+    user: { email: "" },
+    bookingName: "",
+    bookingEmail: "",
+    eventCategory: {},
+    eventNotes: "",
+    eventDuration: "",
+    eventStartTime: ""
+})
 
 const adminEvent = ref({
     user: { email: "" },
@@ -85,7 +97,7 @@ const check = () => {
     }
 }
 
-check();
+check()
 
 </script>
 <template>
@@ -105,16 +117,16 @@ check();
                     </router-link>
                 </div>
 
-                <p class="pt-4 pb-8 font-sans font-bold text-4xl text-center">Create Account</p>
+                <p class="pt-4 pb-8 font-sans font-bold text-4xl text-center">Create Schedule</p>
 
                 <div class="p-4">
                     <p>Clinic :</p>
                     <select class="select form-element bg-base-100 border-b-2 itali" style="width: 100%;"
                         :class="{ 'border border-danger': errorClinic }" v-model="newEvent.eventCategory">
                         <option disabled selected>Select Clinic Below</option>
-                        <option v-for="(category, index) in categoryList" :key="index" :value="category">{{
-                                category.eventCategoryName
-                        }}</option>
+                        <option v-for="(category, index) in categories" :key="index" :value="category">
+                            {{ category.eventCategoryName }}
+                        </option>
                     </select>
                     <div v-if="errorClinic" class="error">Please select a clinic</div>
                 </div>
@@ -124,7 +136,7 @@ check();
                     <select v-if="userRole === 'admin'" class="select form-element bg-base-100 border-b-2 itali"
                         style="width: 100%;" :class="{ 'border border-danger': errorName }" v-model="newEvent.user">
                         <option disabled selected>Select User Below</option>
-                        <option v-for="(user, index) in userList" :key="index" :value="user">{{
+                        <option v-for="(user, index) in users" :key="index" :value="user">{{
                                 user.name
                         }}</option>
                     </select>
@@ -144,6 +156,7 @@ check();
                         :class="{ 'border border-danger': errorEmail || !mailVali }">
                     <div v-if="errorEmail" class="error">Please enter Email</div>
                     <div v-if="!mailVali && !errorEmail" class="error">Invalid Email</div>
+                    <div v-if="mailNotFound" class="error">Not found email account</div>
                 </div>
 
                 <div class="grid justify-center pt-4">

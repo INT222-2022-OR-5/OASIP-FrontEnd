@@ -1,12 +1,16 @@
 <script setup>
 import { ref } from "vue"
+import { useRouter } from "vue-router";
+
+const appRouter = useRouter();
+const homeRouter = () => appRouter.push({ name: "home" });
 
 const newUser = ref({
     name: "",
     email: "",
     password: "",
     confirmPassword: "",
-    role: ""
+    role: "student"
 })
 const errorStatus = ref({
     filedErrors: { email: "", name: "" }
@@ -113,10 +117,17 @@ const createUser = async (user) => {
         console.log(errorStatus.value);
     }
 };
+const userRole = localStorage.getItem("role")
 </script>
       
 <template>
-    <div class="body">
+    <div v-if="userRole === 'admin' || userRole === 'lecturer' || userRole === 'student'" class="text-center">
+        <img class="mx-auto" src='../assets/login-page.png' alt="" width="500" height="600" />
+        <p class="p-8 font-sans font-bold text-4xl text-center">You already sign-in</p>
+        <button @click.left="homeRouter" class="btn mt-5 text-base px-10">Go To Home Page</button>
+    </div>
+
+    <div v-else class="body">
         <div class="flex justify-center">
             <div class="modal-content-box bg-base-200 rounded-2xl">
 
@@ -135,7 +146,7 @@ const createUser = async (user) => {
                         </table>
                         <div class="py-3">
                             <input class="form-element bg-base-100 border-b-2 italic" maxlength="100"
-                                v-model="newUser.name" placeholder="Name"
+                                v-model.trim="newUser.name" placeholder="Name"
                                 :class="{ 'styleError': errorAddName || errorStatus.filedErrors.name }">
                             <p class="error-signup" v-if="errorAddName === true">Please enter your name</p>
                             <p class="error-signup"
@@ -156,7 +167,7 @@ const createUser = async (user) => {
                         </table>
                         <div class="py-3">
                             <input class="form-element bg-base-100 border-b-2 italic" maxlength="50"
-                                v-model="newUser.email" placeholder="Email"
+                                v-model.trim="newUser.email" placeholder="Email"
                                 :class="{ 'styleError': errorAddEmail || invaildAddEmail || errorStatus.filedErrors.email === 'Email is already exists' }">
                             <p class="error-signup" v-if="errorAddEmail === true">Please enter your email</p>
                             <p class="error-signup" v-if="errorStatus.filedErrors.email === 'Email is already exists'">

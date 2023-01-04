@@ -119,7 +119,7 @@ const moreDetail = (curUserId) => {
 
 <template>
   <div v-if="token == null">
-    <div class="w-full md:w-1/3 mx-auto">
+    <div class="w-full md:w-1/3 mx-auto py-10">
       <div class="flex flex-col p-5 rounded-lg shadow bg-white">
         <div class="flex flex-col items-center text-center">
           <div class="inline-block p-4 bg-yellow-50 rounded-full">

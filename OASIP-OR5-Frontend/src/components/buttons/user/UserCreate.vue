@@ -10,7 +10,7 @@ const newUser = ref({
   email: "",
   password: "",
   confirmPassword: "",
-  role: ""
+  role: "student"
 })
 const errorStatus = ref({
   filedErrors: { email: "", name: "" }
@@ -147,7 +147,12 @@ const userRole = localStorage.getItem("role")
 </script>
       
 <template>
-  <div v-if="cantReach = true && userRole !== 'admin'" class="text-center">
+  <div v-if="userRole == 'guest'" class="text-center">
+    <img class="mx-auto" src='../../../assets/unauthorized.png' alt="" width="500" height="600" />
+    <button @click.left="homeRouter" class="btn mt-5 text-base px-10">Go To Home Page</button>
+  </div>
+
+  <div v-else-if="cantReach = true && userRole !== 'admin'" class="text-center">
     <img class="mx-auto" src='../../../assets/forbidden.png' alt="" width="500" height="600" />
     <button @click.left="homeRouter" class="btn mt-5 text-base px-10">Go To Home Page</button>
   </div>
@@ -179,12 +184,12 @@ const userRole = localStorage.getItem("role")
               </tr>
             </table>
             <div class="py-3">
-              <input class="form-element bg-base-100 border-b-2 italic" maxlength="100" v-model="newUser.name"
+              <input class="form-element bg-base-100 border-b-2 italic" maxlength="100" v-model.trim="newUser.name"
                 placeholder="Name" :class="{ 'styleError': errorAddName || errorStatus.filedErrors.name }">
               <p class="error-signup" v-if="errorAddName === true">Please enter your name</p>
-              <p class="error-signup" v-if="errorStatus.filedErrors.name === 'User name is already exists'">Name is
-                already
-                exists</p>
+              <p class="error-signup" v-if="errorStatus.filedErrors.name === 'User name is already exists'">
+                Name isalready exists
+              </p>
             </div>
           </div>
 
@@ -197,16 +202,14 @@ const userRole = localStorage.getItem("role")
               </tr>
             </table>
             <div class="py-3">
-              <input class="form-element bg-base-100 border-b-2 italic" maxlength="50" v-model="newUser.email"
+              <input class="form-element bg-base-100 border-b-2 italic" maxlength="50" v-model.trim="newUser.email"
                 placeholder="Email"
                 :class="{ 'styleError': errorAddEmail || invaildAddEmail || errorStatus.filedErrors.email === 'Email is already exists' }">
               <p class="error-signup" v-if="errorAddEmail === true">Please enter your email</p>
               <p class="error-signup" v-if="errorStatus.filedErrors.email === 'Email is already exists'">
-                Email
-                is already exists</p>
-              <p class="error-signup" v-if="invaildAddEmail === true && errorAddEmail === false">Invaild
-                Email
+                Email is already exists
               </p>
+              <p class="error-signup" v-if="invaildAddEmail === true && errorAddEmail === false">Invaild Email</p>
               <p class="error-login" v-if="noPass === true">Please enter your password</p>
             </div>
           </div>
@@ -224,8 +227,9 @@ const userRole = localStorage.getItem("role")
                 v-model="newUser.password" placeholder="Password" type="password"
                 :class="{ 'styleError': errorAddPass || passLess }">
               <p class="error-signup" v-if="errorAddPass === true">Please enter your password</p>
-              <p class="error-signup" v-if="passLess === true && errorAddPass === false">Password must be
-                between 8 and 14 characters</p>
+              <p class="error-signup" v-if="passLess === true && errorAddPass === false">
+                Password must be between 8 and 14 characters
+              </p>
             </div>
 
           </div>
@@ -241,10 +245,10 @@ const userRole = localStorage.getItem("role")
             <div class="py-3">
               <input class="form-element bg-base-100 border-b-2 italic" maxlength="14" v-model="newUser.confirmPassword"
                 placeholder="Confirm Password" type="password" :class="{ 'styleError': errorConfirm || notMatch }">
-              <p class="error-signup" v-if="errorConfirm === true && notMatch === false">Please confirm
-                your
-                password.</p>
-              <p class="error-signup" v-if="notMatch === true">Password not match.</p>
+              <p class="error-signup" v-if="errorConfirm === true && notMatch === false">
+                Please confirm your password
+              </p>
+              <p class="error-signup" v-if="notMatch === true">Password not match</p>
             </div>
           </div>
 
@@ -259,10 +263,10 @@ const userRole = localStorage.getItem("role")
             <div class="py-3">
               <select class="select form-element bg-base-100 border-b-2 italic" :class="{ 'styleError': errorAddRole }"
                 v-model="newUser.role">
-                <option disabled selected>Select your role</option>
+                <option disabled>Select your role</option>
                 <option value="admin">Admin</option>
                 <option value="lecturer">Lecturer</option>
-                <option value="student">Student</option>
+                <option value="student" selected>Student</option>
               </select>
               <p class="error-signup" v-if="errorAddRole === true">Please select your role</p>
             </div>
