@@ -1,5 +1,9 @@
 <script setup>
 import { ref } from "vue";
+import { useRouter } from "vue-router";
+
+const appRouter = useRouter();
+const homeRouter = () => appRouter.push({ name: "home" });
 
 const token = ref()
 const email = ref();
@@ -32,17 +36,28 @@ const LoginUsers = async (email, password) => {
     window.location.href = "/or5"
     alert("Password Matched")
     console.log("Log-in Successfully");
-    
+
+  } else if (res.status === 404){
+    error.value = true;
+    alert("Email Not Found");
+    console.log("Error, User cannot login");
   } else {
     error.value = true;
     alert("Password NOT Matched");
     console.log("Error, User cannot login");
   }
 }
+const userRole = localStorage.getItem("role")
 </script>
 
 <template>
-  <div class="flex flex-col items-center justify-center px-6 py-28 mx-auto">
+  <div v-if="userRole === 'admin' || userRole === 'lecturer' || userRole === 'student'" class="text-center">
+    <img class="mx-auto" src='../assets/login-page.png' alt="" width="500" height="600" />
+    <p class="p-8 font-sans font-bold text-4xl text-center">You already log-in</p>
+    <button @click.left="homeRouter" class="btn mt-5 text-base px-10">Go To Home Page</button>
+  </div>
+
+  <div v-else class="flex flex-col items-center justify-center px-6 py-28 mx-auto">
     <div
       class="w-full bg-base-200 rounded-lg shadow dark:border md:mt-0 sm:max-w-md xl:p-0 dark:bg-gray-800 dark:border-gray-700">
       <div class="p-6 space-y-4 md:space-y-6 sm:p-8">
@@ -55,13 +70,13 @@ const LoginUsers = async (email, password) => {
             <label for="email" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
               Email
             </label>
-            <input type="email" v-model="email"
+            <input type="email" v-model.trim="email"
               class="bg-gray-50 border border-gray-300 text-gray-900 italic sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
               placeholder="Email">
           </div>
           <div>
             <label for="password" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Password</label>
-            <input type="password" v-model="password" placeholder="Password"
+            <input type="password" v-model.trim="password" placeholder="Password"
               class="bg-gray-50 border border-gray-300 text-gray-900 italic sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
           </div>
           <button type="submit"

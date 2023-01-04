@@ -2,6 +2,10 @@
 import { ref, onBeforeMount } from 'vue'
 import moment from 'moment';
 import EventManage from './EventManage.vue'
+import { useRouter } from "vue-router";
+
+const appRouter = useRouter();
+const homeRouter = () => appRouter.push({ name: "home" });
 
 const newAccess = ref()
 let token = localStorage.getItem("token")
@@ -35,7 +39,6 @@ const categories = ref([])
 const getEventCategory = async () => {
   const res = await fetch(`${import.meta.env.BASE_URL}api/eventCategory`, {
     method: 'GET',
-
   })
   if (res.status === 200) {
     categories.value = await res.json()
@@ -57,22 +60,20 @@ const getUser = async () => {
     users.value.sort();
   } else if (res.status === 401 && token !== null) {
     RefreshToken();
-  } else if (userRole === 'lecturer') {
-    window.location.href = "/or5/forbidden"
   }
 };
 
 onBeforeMount(async () => {
   await getEventCategory();
-  await getUser()
+  // await getUser()
 })
 
-const addAlert = ref(false)
 const errorName = ref(false)
 const errorClinic = ref(false)
 const errorEmail = ref(false)
 const errorTime = ref(false)
 const mailVali = ref(true)
+const mailNotFound = ref(false)
 const errorFuture = ref(false)
 const overlap = ref(false)
 
@@ -88,9 +89,22 @@ const createEvent = async (event) => {
     } else {
       errorEmail.value = false
     }
-  }
-  else if (userRole !== 'guest') {
+    var emailValidate = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+
+    if (event.bookingEmail.match(emailValidate)) {
+      mailVali.value = true
+    } else {
+      mailVali.value = false
+      console.log('not validate');
+    }
+  } else if (userRole === 'admin') {
     if (Object.keys(event.user).length === 0) {
+      errorName.value = true
+    } else {
+      errorName.value = false
+    }
+  } else if (userRole === 'student') {
+    if (event.bookingName == null || event.bookingName == '') {
       errorName.value = true
     } else {
       errorName.value = false
@@ -113,15 +127,6 @@ const createEvent = async (event) => {
   } else {
     errorFuture.value = true
   }
-
-  // var emailValidate = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-
-  // if (event.bookingEmail.match(emailValidate)) {
-  //     mailVali.value = true
-  // } else {
-  //     mailVali.value = false
-  //     console.log('not validate');
-  // }
 
   if (errorName.value == true || errorClinic.value == true || errorTime.value == true || errorFuture.value == true || mailVali.value == false) {
     return
@@ -152,7 +157,6 @@ const createEvent = async (event) => {
       console.log('Created Successfully');
       alert("Created Successfully")
       window.location.href = "/or5/event";
-      addAlert.value = true
     } else if (res.status == 400) {
       overlap.value = true
       console.log('Error, Can not add');
@@ -183,7 +187,6 @@ const createEvent = async (event) => {
       console.log('Created Successfully');
       alert("Created Successfully")
       window.location.href = "/or5/event";
-      addAlert.value = true
     } else if (res.status == 400) {
       overlap.value = true
       console.log('Error, Can not add');
@@ -210,26 +213,26 @@ const createEvent = async (event) => {
       console.log('Created Successfully');
       alert("Created Successfully")
       window.location.href = "/or5/event";
-      addAlert.value = true
     } else if (res.status == 400) {
       overlap.value = true
       console.log('Error, Can not add');
+    } else if (res.status == 500) {
+      mailNotFound.value = true
     }
   }
 }
 </script>
  
 <template>
-  <div v-if="userRole === 'lecturer'">
-        <div class="mx-auto">
-            <p>403</p>
-        </div>
-    </div>
+  <div v-if="userRole === 'lecturer'" class="text-center">
+    <img class="mx-auto" src='../../../assets/forbidden.png' alt="" width="500" height="600" />
+    <button @click.left="homeRouter" class="btn mt-5 text-base px-10">Go To Home Page</button>
+  </div>
 
-  <div class="body">
-    <EventManage :categoryList="categories" :userList="users" :errorName="errorName" :errorClinic="errorClinic"
+  <div v-else class="body">
+    <EventManage :categories="categories" :users="users" :errorName="errorName" :errorClinic="errorClinic"
       :errorEmail="errorEmail" :errorTime="errorTime" :mailVali="mailVali" :errorFuture="errorFuture" :overlap="overlap"
-      @create="createEvent" />
+      :mailNotFound="mailNotFound" @create="createEvent" />
   </div>
 </template>
  

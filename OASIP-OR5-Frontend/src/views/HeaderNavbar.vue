@@ -8,6 +8,8 @@ const signout = () => {
 }
 
 const role = localStorage.getItem("role");
+const email = localStorage.getItem("email");
+
 </script>
 
 <template>
@@ -24,6 +26,12 @@ const role = localStorage.getItem("role");
             </svg>
             OASIP
           </router-link>
+          &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+          <span v-if="email != null" class="font-medium text-sky-500 text-xl">
+            <span class="font-bold">User:  </span> {{ email }}
+            &nbsp;
+            <span class="text-red-400"><span class="font-bold ">Role:  </span> {{ role }}</span>
+          </span>
         </div>
 
         <ul :class="showMenu ? 'flex' : 'hidden'"
@@ -34,7 +42,8 @@ const role = localStorage.getItem("role");
           <li class="text-xl font-bold text-gray-800 hover:text-blue-400 hover-underline-animation ">
             <router-link :to="{ name: 'eventList' }">Schedule</router-link>
           </li>
-          <li class="text-xl font-bold text-gray-800 hover:text-blue-400 hover-underline-animation " v-if="role === 'admin'">
+          <li class="text-xl font-bold text-gray-800 hover:text-blue-400 hover-underline-animation "
+            v-if="role === 'admin'">
             <router-link :to="{ name: 'userList' }">User</router-link>
           </li>
           <li class="text-xl font-bold text-gray-800 hover:text-blue-400 hover-underline-animation ">

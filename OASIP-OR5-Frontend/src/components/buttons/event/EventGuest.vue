@@ -27,8 +27,6 @@ const guestEvent = ref({
     eventStartTime: ""
 })
 
-const userRole = localStorage.getItem("role")
-
 const addAlert = ref(false)
 const errorName = ref(false)
 const errorClinic = ref(false)
@@ -122,7 +120,7 @@ const createGuest = async (event) => {
                         </router-link>
                     </div>
 
-                    <p class="pt-4 pb-8 font-sans font-bold text-4xl text-center">Create Account</p>
+                    <p class="pt-4 pb-8 font-sans font-bold text-4xl text-center">Create Schedule</p>
 
                     <div class="p-4">
                         <p>Clinic :</p>
@@ -151,6 +149,8 @@ const createGuest = async (event) => {
                             :class="{ 'border border-danger': errorEmail || !mailVali }">
                         <div v-if="errorEmail" class="error">Please enter Email</div>
                         <div v-if="!mailVali && !errorEmail" class="error">Invalid Email</div>
+                        <div v-if="mailNotFound" class="error">Not found email account</div>
+
                     </div>
 
                     <div class="grid justify-center pt-4">

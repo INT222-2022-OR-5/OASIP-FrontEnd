@@ -9,13 +9,13 @@ let token = localStorage.getItem("token")
       <!--Left Col-->
       <div class="flex flex-col w-full xl:w-2/5 justify-center lg:items-start overflow-y-hidden">
         <h1 class="my-4 text-3xl md:text-5xl font-bold leading-tight text-center md:text-left slide-in-bottom-h1">
-          Welcome to ORSIP-OR5
+          Welcome to OASIP-OR5
         </h1>
         <p class="leading-normal text-base md:text-2xl mb-8 text-center md:text-left slide-in-bottom-subtitle">
           Online Appointment Scheduling System for Integrated Project Clinics
         </p>
         <div v-if="(token === null)">
-          <router-link :to="{ name: 'createGuest' }">
+          <router-link :to="{ name: 'createEvent' }">
             <button
               class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 border border-blue-700 rounded slide-in-bottom-subtitle">
               Booking As Guest
